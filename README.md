@@ -11,43 +11,43 @@ go run . -port 1314
 ブラウザで <http://127.0.0.1:1314> を開き、Hugoサイトの絶対パスを入力します。起動時に指定することもできます。
 
 ```bash
-go run . -site /c/path/to/hugo-site
+go run . -site /path/to/hugo-site
 ```
 
 実行ファイルを作る場合は次を実行します。
 
 ```bash
-go build -buildvcs=false -o seicho.exe .
+go build -buildvcs=false -o seicho .
 ```
 
 ビルド済みの実行ファイルはGit Bashから次のように起動できます。
 
 ```bash
-./seicho.exe -port 1314
+./seicho -port 1314
 ```
 
 Hugoサイトを指定して起動する場合：
 
 ```bash
-./seicho.exe -site /c/path/to/hugo-site
+./seicho -site /path/to/hugo-site
 ```
 
 ポート番号を変更する場合は`-port`を指定します。未指定時は`1314`です。
 
 ```bash
-./seicho.exe -port 8080
+./seicho -port 8080
 ```
 
 サイトとポート番号は同時に指定できます。
 
 ```bash
-./seicho.exe -site /c/path/to/hugo-site -port 8080
+./seicho -site /path/to/hugo-site -port 8080
 ```
 
 バージョン情報を確認する場合：
 
 ```bash
-./seicho.exe -version
+./seicho -version
 ```
 
 ## 機能

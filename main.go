@@ -60,12 +60,13 @@ func main() {
 	showVersion := flag.Bool("version", false, "show version")
 	flag.Usage = func() {
 		out := flag.CommandLine.Output()
+		command := strings.TrimSuffix(filepath.Base(os.Args[0]), filepath.Ext(os.Args[0]))
 		fmt.Fprintf(out, "Seicho %s - local editor for Hugo posts\n\n", version)
-		fmt.Fprintf(out, "Usage:\n  %s [options]\n\nOptions:\n", filepath.Base(os.Args[0]))
+		fmt.Fprintf(out, "Usage:\n  %s [options]\n\nOptions:\n", command)
 		flag.PrintDefaults()
 		fmt.Fprintln(out, "\nExamples:")
-		fmt.Fprintf(out, "  %s -port 1314\n", filepath.Base(os.Args[0]))
-		fmt.Fprintf(out, "  %s -site /c/path/to/hugo-site -port 8080\n", filepath.Base(os.Args[0]))
+		fmt.Fprintf(out, "  %s -port 1314\n", command)
+		fmt.Fprintf(out, "  %s -site /path/to/hugo-site -port 8080\n", command)
 	}
 	if len(os.Args) == 1 {
 		flag.Usage()
