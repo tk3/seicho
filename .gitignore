@@ -1,5 +1,6 @@
 .gocache/
 seicho.exe
+seicho.exe~
 *.seicho-tmp
 .DS_Store
 Thumbs.db

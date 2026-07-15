@@ -38,11 +38,13 @@ Hugoサイトを指定して起動する場合：
 - `hugo new content`による新規投稿作成（`archetypes/default.md`対応）
 - YAML/TOML Front Matterを保った編集
 - 新規投稿、保存、削除
-- Markdownの簡易ライブプレビュー
+- Hugoと同じGoldmarkを使ったMarkdownライブプレビュー
 - 外部変更との上書き競合検出
 - `content` 外へのファイル操作を防止
 
 現時点ではHugoプレビューサーバーの起動、画像アップロード、Git操作は未対応です。
+
+簡易プレビューはHugoと同じGoldmarkパーサーを使用します。CommonMark、テーブル、取り消し線、タスクリスト、定義リスト、脚注などに対応します。Shortcode、テーマ、Render Hookを含む最終表示の再現には、将来対応予定のHugoプレビューサーバーが必要です。
 
 新規投稿の作成では、`hugo`コマンドへPATHが通っている必要があります。選択したサイトを作業ディレクトリとして、次の形式のコマンドを実行します。
 

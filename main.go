@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"embed"
 	"encoding/json"
@@ -18,14 +19,18 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/extension"
 )
 
 //go:embed web/*
 var webFiles embed.FS
 
 type server struct {
-	mu   sync.RWMutex
-	root string
+	mu       sync.RWMutex
+	root     string
+	markdown goldmark.Markdown
 }
 
 type postSummary struct {
@@ -48,7 +53,7 @@ func main() {
 	root := flag.String("site", "", "Hugo site directory")
 	addr := flag.String("addr", "127.0.0.1:1314", "listen address")
 	flag.Parse()
-	s := &server{}
+	s := &server{markdown: newMarkdownRenderer()}
 	if *root != "" {
 		if err := s.setRoot(*root); err != nil {
 			log.Fatal(err)
@@ -58,6 +63,7 @@ func main() {
 	mux.HandleFunc("/api/site", s.site)
 	mux.HandleFunc("/api/posts", s.posts)
 	mux.HandleFunc("/api/post", s.post)
+	mux.HandleFunc("/api/preview", s.preview)
 	mux.HandleFunc("/", static)
 	ln, err := net.Listen("tcp", *addr)
 	if err != nil {
@@ -65,6 +71,39 @@ func main() {
 	}
 	fmt.Printf("Seicho: http://%s\n", ln.Addr())
 	log.Fatal(http.Serve(ln, securityHeaders(mux)))
+}
+
+func newMarkdownRenderer() goldmark.Markdown {
+	return goldmark.New(goldmark.WithExtensions(
+		extension.GFM,
+		extension.DefinitionList,
+		extension.Footnote,
+		extension.Typographer,
+	))
+}
+
+func (s *server) preview(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		methodNotAllowed(w)
+		return
+	}
+	var req struct {
+		Markdown string `json:"markdown"`
+	}
+	if err := decodeJSON(r, &req); err != nil {
+		apiError(w, 400, err)
+		return
+	}
+	renderer := s.markdown
+	if renderer == nil {
+		renderer = newMarkdownRenderer()
+	}
+	var output bytes.Buffer
+	if err := renderer.Convert([]byte(req.Markdown), &output); err != nil {
+		apiError(w, 500, err)
+		return
+	}
+	jsonResponse(w, 200, map[string]string{"html": output.String()})
 }
 
 func securityHeaders(next http.Handler) http.Handler {
