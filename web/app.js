@@ -1,0 +1,23 @@
+const $=s=>document.querySelector(s);let posts=[],current=null,dirty=false;
+async function api(url,options={}){const r=await fetch(url,{headers:{'Content-Type':'application/json'},...options});if(!r.ok){let e=await r.json().catch(()=>({error:r.statusText}));throw Error(e.error)}return r.status===204?null:r.json()}
+function showSetup(show=true){$('#setup').classList.toggle('hidden',!show)}
+async function boot(){const site=await api('/api/site');if(!site.configured)return showSetup();$('#site-name').textContent=site.path;await loadPosts()}
+$('#site-form').onsubmit=async e=>{e.preventDefault();try{const site=await api('/api/site',{method:'POST',body:JSON.stringify({path:$('#site-path').value})});$('#site-name').textContent=site.path;showSetup(false);$('#setup-error').value='';await loadPosts()}catch(e){$('#setup-error').value=e.message}}
+$('#change-site').onclick=()=>showSetup();
+async function loadPosts(){posts=await api('/api/posts');renderList()}
+function renderList(){const q=$('#search').value.toLowerCase(),sort=$('#sort').value;const compare={"modified-desc":(a,b)=>new Date(b.modified)-new Date(a.modified),"modified-asc":(a,b)=>new Date(a.modified)-new Date(b.modified),"date-desc":(a,b)=>(b.date||'').localeCompare(a.date||'')}[sort];$('#post-list').innerHTML='';posts.filter(p=>(p.title+' '+p.path).toLowerCase().includes(q)).sort((a,b)=>compare(a,b)||a.path.localeCompare(b.path)).forEach(p=>{const el=document.createElement('div');el.className='post'+(current?.path===p.path?' active':'');const updated=new Date(p.modified).toLocaleString('ja-JP',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});el.innerHTML=`<strong>${esc(p.title)}${p.draft?'<span class="draft">DRAFT</span>':''}</strong><small>更新 ${esc(updated)}</small>`;el.onclick=()=>openPost(p.path);$('#post-list').append(el)})}
+$('#search').oninput=renderList;
+$('#sort').onchange=renderList;
+async function openPost(path){if(dirty&&!confirm('保存していない変更を破棄しますか？'))return;current=await api('/api/post?path='+encodeURIComponent(path));$('#path').value=current.path;$('#front').value=current.frontMatter;$('#body').value=current.body;dirty=false;showEditor();render();renderList()}
+function showEditor(){ $('#empty').classList.add('hidden');$('#editor').classList.remove('hidden') }
+async function newPost(){if(dirty&&!confirm('保存していない変更を破棄しますか？'))return;const path=prompt('新しい投稿のパスを入力してください','posts/new-post.md');if(!path)return;try{current=await api('/api/post',{method:'POST',body:JSON.stringify({path})});$('#path').value=current.path;$('#front').value=current.frontMatter;$('#body').value=current.body;dirty=false;showEditor();render();await loadPosts();$('#body').focus();toast('Hugoのarchetypeから投稿を作成しました')}catch(e){toast(e.message,true)}}
+$('#new').onclick=$('#empty-new').onclick=newPost;
+['path','front','body'].forEach(id=>$('#'+id).addEventListener('input',()=>{dirty=true;render()}));
+function render(){let s=esc($('#body').value);s=s.replace(/^```([^\n]*)\n([\s\S]*?)^```/gm,'<pre><code>$2</code></pre>').replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^# (.+)$/gm,'<h1>$1</h1>').replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`(.+?)`/g,'<code>$1</code>').replace(/\[([^\]]+)\]\((https?:\/\/[^ )]+)\)/g,'<a href="$2" target="_blank" rel="noreferrer">$1</a>').replace(/^(?!<[hbp])(.+)$/gm,'<p>$1</p>');$('#preview').innerHTML=s||'<p style="color:#999">プレビューがここに表示されます。</p>'}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('#save').onclick=save;
+async function save(){if(!current)return;try{current=await api('/api/post',{method:'PUT',body:JSON.stringify({path:$('#path').value,frontMatter:$('#front').value,body:$('#body').value,delimiter:current.delimiter,modified:current.modified})});dirty=false;toast('保存しました');await loadPosts()}catch(e){toast(e.message,true)}}
+$('#delete').onclick=async()=>{if(!current||!confirm(`「${current.path}」を削除しますか？`))return;try{await api('/api/post?path='+encodeURIComponent(current.path),{method:'DELETE'});current=null;dirty=false;$('#editor').classList.add('hidden');$('#empty').classList.remove('hidden');await loadPosts();toast('削除しました')}catch(e){toast(e.message,true)}}
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();save()}});window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+function toast(msg,bad=false){const el=$('#toast');el.textContent=msg;el.style.background=bad?'#a93e2b':'';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2600)}
+boot().catch(e=>toast(e.message,true));

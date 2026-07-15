@@ -1,0 +1,5 @@
+.gocache/
+seicho.exe
+*.seicho-tmp
+.DS_Store
+Thumbs.db
