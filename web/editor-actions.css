@@ -1,5 +1,3 @@
-.meta{grid-template-columns:minmax(220px,1fr) minmax(320px,2fr) auto;align-items:stretch}
-.meta-actions{display:flex;align-items:flex-end}
+.meta{grid-template-columns:minmax(0,1fr);align-items:stretch}
+.meta-actions{display:flex;justify-content:flex-end}
 .meta-actions .danger{margin:0;white-space:nowrap;height:38px}
-@media(max-width:1000px){.meta{grid-template-columns:1fr 2fr}.meta-actions{grid-column:1/-1;justify-content:flex-end}}
-@media(max-width:800px){.meta{grid-template-columns:1fr}.meta-actions{grid-column:auto}}

@@ -32,6 +32,18 @@ Hugoサイトを指定して起動する場合：
 ./seicho.exe -site /c/path/to/hugo-site
 ```
 
+ポート番号を変更する場合は`-port`を指定します。未指定時は`1314`です。
+
+```bash
+./seicho.exe -port 8080
+```
+
+サイトとポート番号は同時に指定できます。
+
+```bash
+./seicho.exe -site /c/path/to/hugo-site -port 8080
+```
+
 ## 機能
 
 - Markdown投稿の一覧・検索・更新日時順の並べ替え

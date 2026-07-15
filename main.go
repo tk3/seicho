@@ -51,8 +51,16 @@ type postDocument struct {
 
 func main() {
 	root := flag.String("site", "", "Hugo site directory")
-	addr := flag.String("addr", "127.0.0.1:1314", "listen address")
+	port := flag.Int("port", 1314, "listen port")
+	addr := flag.String("addr", "", "listen address (overrides -port)")
 	flag.Parse()
+	if *port < 1 || *port > 65535 {
+		log.Fatal("port must be between 1 and 65535")
+	}
+	listenAddress := *addr
+	if listenAddress == "" {
+		listenAddress = fmt.Sprintf("127.0.0.1:%d", *port)
+	}
 	s := &server{markdown: newMarkdownRenderer()}
 	if *root != "" {
 		if err := s.setRoot(*root); err != nil {
@@ -65,7 +73,7 @@ func main() {
 	mux.HandleFunc("/api/post", s.post)
 	mux.HandleFunc("/api/preview", s.preview)
 	mux.HandleFunc("/", static)
-	ln, err := net.Listen("tcp", *addr)
+	ln, err := net.Listen("tcp", listenAddress)
 	if err != nil {
 		log.Fatal(err)
 	}
