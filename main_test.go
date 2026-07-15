@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
@@ -158,5 +159,43 @@ func TestRemovingLeadingBodyBlankLineIsSaved(t *testing.T) {
 	}
 	if string(saved) != "---\ntitle: Test\n---\n\nBody" {
 		t.Fatalf("unexpected saved content: %q", saved)
+	}
+}
+
+func TestChangingPostPathRenamesFile(t *testing.T) {
+	root := t.TempDir()
+	contentDir := filepath.Join(root, "content", "posts")
+	if err := os.MkdirAll(contentDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	oldPath := filepath.Join(contentDir, "old.md")
+	newPath := filepath.Join(contentDir, "renamed.md")
+	if err := os.WriteFile(oldPath, []byte("---\ntitle: Test\n---\n\nBody"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	info, err := os.Stat(oldPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	doc := postDocument{Path: "posts/renamed.md", OriginalPath: "posts/old.md", FrontMatter: "title: Renamed", Body: "Updated", Delimiter: "---", Modified: fileVersion(info)}
+	payload, err := json.Marshal(doc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := &server{root: root, markdown: newMarkdownRenderer()}
+	recorder := httptest.NewRecorder()
+	s.post(recorder, httptest.NewRequest("PUT", "/api/post", strings.NewReader(string(payload))))
+	if recorder.Code != 200 {
+		t.Fatalf("status = %d, body = %s", recorder.Code, recorder.Body.String())
+	}
+	if _, err := os.Stat(oldPath); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("old file still exists: %v", err)
+	}
+	saved, err := os.ReadFile(newPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(saved), "Updated") {
+		t.Fatalf("renamed content was not saved: %s", saved)
 	}
 }

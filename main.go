@@ -46,11 +46,12 @@ type postSummary struct {
 }
 
 type postDocument struct {
-	Path        string `json:"path"`
-	FrontMatter string `json:"frontMatter"`
-	Body        string `json:"body"`
-	Delimiter   string `json:"delimiter,omitempty"`
-	Modified    string `json:"modified,omitempty"`
+	Path         string `json:"path"`
+	OriginalPath string `json:"originalPath,omitempty"`
+	FrontMatter  string `json:"frontMatter"`
+	Body         string `json:"body"`
+	Delimiter    string `json:"delimiter,omitempty"`
+	Modified     string `json:"modified,omitempty"`
 }
 
 func main() {
@@ -333,9 +334,27 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 			apiError(w, 400, err)
 			return
 		}
-		if info, err := os.Stat(path); err == nil && doc.Modified != "" && fileVersion(info) != doc.Modified {
+		originalPath := path
+		if doc.OriginalPath != "" {
+			originalPath, err = safePostPath(root, doc.OriginalPath)
+			if err != nil {
+				apiError(w, 400, err)
+				return
+			}
+		}
+		renaming := filepath.Clean(originalPath) != filepath.Clean(path)
+		if info, err := os.Stat(originalPath); err == nil && doc.Modified != "" && fileVersion(info) != doc.Modified {
 			apiError(w, 409, errors.New("保存後にファイルが変更されています。再読み込みしてください"))
 			return
+		}
+		if renaming {
+			if _, err := os.Stat(path); err == nil {
+				apiError(w, 409, errors.New("変更先のパスには既に投稿が存在します"))
+				return
+			} else if !errors.Is(err, os.ErrNotExist) {
+				apiError(w, 500, err)
+				return
+			}
 		}
 		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 			apiError(w, 500, err)
@@ -365,7 +384,15 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 			apiError(w, 500, errors.New("保存後のファイル内容が一致しません"))
 			return
 		}
+		if renaming {
+			if err := os.Remove(originalPath); err != nil {
+				os.Remove(path)
+				apiError(w, 500, fmt.Errorf("元ファイルを削除できないため名前を変更できません: %w", err))
+				return
+			}
+		}
 		info, _ := os.Stat(path)
+		doc.OriginalPath = ""
 		doc.Modified = fileVersion(info)
 		jsonResponse(w, 200, doc)
 	case http.MethodDelete:
