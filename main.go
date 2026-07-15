@@ -27,6 +27,10 @@ import (
 //go:embed web/*
 var webFiles embed.FS
 
+// version can be replaced at build time with:
+// go build -ldflags "-X main.version=1.0.0" .
+var version = "0.1.0"
+
 type server struct {
 	mu       sync.RWMutex
 	root     string
@@ -46,14 +50,32 @@ type postDocument struct {
 	FrontMatter string `json:"frontMatter"`
 	Body        string `json:"body"`
 	Delimiter   string `json:"delimiter,omitempty"`
-	Modified    int64  `json:"modified,omitempty"`
+	Modified    string `json:"modified,omitempty"`
 }
 
 func main() {
 	root := flag.String("site", "", "Hugo site directory")
 	port := flag.Int("port", 1314, "listen port")
 	addr := flag.String("addr", "", "listen address (overrides -port)")
+	showVersion := flag.Bool("version", false, "show version")
+	flag.Usage = func() {
+		out := flag.CommandLine.Output()
+		fmt.Fprintf(out, "Seicho %s - local editor for Hugo posts\n\n", version)
+		fmt.Fprintf(out, "Usage:\n  %s [options]\n\nOptions:\n", filepath.Base(os.Args[0]))
+		flag.PrintDefaults()
+		fmt.Fprintln(out, "\nExamples:")
+		fmt.Fprintf(out, "  %s -port 1314\n", filepath.Base(os.Args[0]))
+		fmt.Fprintf(out, "  %s -site /c/path/to/hugo-site -port 8080\n", filepath.Base(os.Args[0]))
+	}
+	if len(os.Args) == 1 {
+		flag.Usage()
+		return
+	}
 	flag.Parse()
+	if *showVersion {
+		fmt.Printf("Seicho %s\n", version)
+		return
+	}
 	if *port < 1 || *port > 65535 {
 		log.Fatal("port must be between 1 and 65535")
 	}
@@ -170,7 +192,7 @@ func (s *server) getRoot() string { s.mu.RLock(); defer s.mu.RUnlock(); return s
 
 func (s *server) site(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
-		jsonResponse(w, 200, map[string]any{"path": s.getRoot(), "configured": s.getRoot() != ""})
+		jsonResponse(w, 200, map[string]any{"path": s.getRoot(), "configured": s.getRoot() != "", "version": version})
 		return
 	}
 	if r.Method != http.MethodPost {
@@ -188,7 +210,7 @@ func (s *server) site(w http.ResponseWriter, r *http.Request) {
 		apiError(w, 400, err)
 		return
 	}
-	jsonResponse(w, 200, map[string]any{"path": s.getRoot(), "configured": true})
+	jsonResponse(w, 200, map[string]any{"path": s.getRoot(), "configured": true, "version": version})
 }
 
 func (s *server) posts(w http.ResponseWriter, r *http.Request) {
@@ -251,7 +273,7 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 		info, _ := os.Stat(path)
 		front, body, delim := splitDocument(string(data))
 		rel, _ := filepath.Rel(filepath.Join(root, "content"), path)
-		jsonResponse(w, 200, postDocument{Path: filepath.ToSlash(rel), FrontMatter: front, Body: body, Delimiter: delim, Modified: info.ModTime().UnixNano()})
+		jsonResponse(w, 200, postDocument{Path: filepath.ToSlash(rel), FrontMatter: front, Body: body, Delimiter: delim, Modified: fileVersion(info)})
 	case http.MethodPost:
 		var req struct {
 			Path string `json:"path"`
@@ -298,7 +320,7 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		front, body, delim := splitDocument(string(data))
-		jsonResponse(w, http.StatusCreated, postDocument{Path: filepath.ToSlash(rel), FrontMatter: front, Body: body, Delimiter: delim, Modified: info.ModTime().UnixNano()})
+		jsonResponse(w, http.StatusCreated, postDocument{Path: filepath.ToSlash(rel), FrontMatter: front, Body: body, Delimiter: delim, Modified: fileVersion(info)})
 	case http.MethodPut:
 		var doc postDocument
 		if err := decodeJSON(r, &doc); err != nil {
@@ -310,7 +332,7 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 			apiError(w, 400, err)
 			return
 		}
-		if info, err := os.Stat(path); err == nil && doc.Modified != 0 && info.ModTime().UnixNano() != doc.Modified {
+		if info, err := os.Stat(path); err == nil && doc.Modified != "" && fileVersion(info) != doc.Modified {
 			apiError(w, 409, errors.New("保存後にファイルが変更されています。再読み込みしてください"))
 			return
 		}
@@ -322,7 +344,7 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 		if delim != "+++" {
 			delim = "---"
 		}
-		content := delim + "\n" + strings.TrimSpace(doc.FrontMatter) + "\n" + delim + "\n\n" + strings.TrimLeft(doc.Body, "\r\n")
+		content := delim + "\n" + strings.TrimSpace(doc.FrontMatter) + "\n" + delim + "\n\n" + doc.Body
 		tmp := path + ".seicho-tmp"
 		if err := os.WriteFile(tmp, []byte(content), 0644); err != nil {
 			apiError(w, 500, err)
@@ -333,8 +355,17 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 			apiError(w, 500, err)
 			return
 		}
+		saved, err := os.ReadFile(path)
+		if err != nil {
+			apiError(w, 500, fmt.Errorf("保存後のファイルを確認できません: %w", err))
+			return
+		}
+		if !bytes.Equal(saved, []byte(content)) {
+			apiError(w, 500, errors.New("保存後のファイル内容が一致しません"))
+			return
+		}
 		info, _ := os.Stat(path)
-		doc.Modified = info.ModTime().UnixNano()
+		doc.Modified = fileVersion(info)
 		jsonResponse(w, 200, doc)
 	case http.MethodDelete:
 		path, err := safePostPath(root, r.URL.Query().Get("path"))
@@ -350,6 +381,10 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 	default:
 		methodNotAllowed(w)
 	}
+}
+
+func fileVersion(info os.FileInfo) string {
+	return info.ModTime().UTC().Format(time.RFC3339Nano)
 }
 
 func safePostPath(root, rel string) (string, error) {
@@ -378,7 +413,11 @@ func splitDocument(src string) (front, body, delimiter string) {
 	delim := lines[0]
 	for i := 1; i < len(lines); i++ {
 		if lines[i] == delim {
-			return strings.Join(lines[1:i], "\n"), strings.Join(lines[i+1:], "\n"), delim
+			body := strings.Join(lines[i+1:], "\n")
+			// The first blank line separates front matter from the body and is
+			// not part of the editable Markdown. Any additional blank lines are.
+			body = strings.TrimPrefix(body, "\n")
+			return strings.Join(lines[1:i], "\n"), body, delim
 		}
 	}
 	return "", src, ""
