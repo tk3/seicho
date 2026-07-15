@@ -1,3 +1,1 @@
 .meta{grid-template-columns:minmax(0,1fr);align-items:stretch}
-.meta-actions{display:flex;justify-content:flex-end}
-.meta-actions .danger{margin:0;white-space:nowrap;height:38px}
