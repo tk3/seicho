@@ -59,7 +59,7 @@ Hugoサイトを指定して起動する場合：
 出力例：
 
 ```text
-Seicho 0.2.3
+Seicho 0.2.4
 OS: windows/amd64
 Go: go1.26.5
 PID: 12345
