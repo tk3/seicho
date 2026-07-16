@@ -29,7 +29,7 @@ var webFiles embed.FS
 
 // version can be replaced at build time with:
 // go build -ldflags "-X main.version=1.0.0" .
-var version = "0.2.0"
+var version = "0.2.1"
 
 type server struct {
 	mu       sync.RWMutex
@@ -56,7 +56,7 @@ type postDocument struct {
 
 func main() {
 	root := flag.String("site", "", "Hugo site directory")
-	port := flag.Int("port", 1314, "listen port")
+	port := flag.Int("port", 1221, "listen port")
 	addr := flag.String("addr", "", "listen address (overrides -port)")
 	showVersion := flag.Bool("version", false, "show version")
 	flag.Usage = func() {
@@ -66,7 +66,7 @@ func main() {
 		fmt.Fprintf(out, "Usage:\n  %s [options]\n\nOptions:\n", command)
 		flag.PrintDefaults()
 		fmt.Fprintln(out, "\nExamples:")
-		fmt.Fprintf(out, "  %s -port 1314\n", command)
+		fmt.Fprintf(out, "  %s -port 1221\n", command)
 		fmt.Fprintf(out, "  %s -site /path/to/hugo-site -port 8080\n", command)
 	}
 	if len(os.Args) == 1 {
