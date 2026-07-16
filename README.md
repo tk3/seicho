@@ -50,6 +50,27 @@ Hugoサイトを指定して起動する場合：
 ./seicho -version
 ```
 
+アクセスした相対URLとHTTPステータスを標準出力へ表示する場合は`-trace`を指定します。
+
+```bash
+./seicho -port 1221 -trace
+```
+
+出力例：
+
+```text
+Seicho 0.2.2
+OS: windows/amd64
+Go: go1.26.5
+PID: 12345
+Listen: http://127.0.0.1:1221
+Site: /path/to/hugo-site
+Trace: enabled
+GET / 200
+GET /api/posts 200
+GET /api/post?path=posts%2Fexample.md 200
+```
+
 ## 機能
 
 - Markdown投稿の一覧・検索・更新日時順の並べ替え

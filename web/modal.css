@@ -6,3 +6,8 @@
 .dialog-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:4px}
 .dialog-actions .secondary{background:#eeece6;color:var(--ink);border:1px solid var(--line)}
 .dialog-actions .secondary:hover{background:#e5e1d9}
+.delete-post-dialog{width:min(540px,90vw)}
+.danger-eyebrow{color:#b7442c}
+.delete-target{margin:18px 0;padding:12px 14px;border:1px solid #ecd3cb;border-radius:6px;background:#fff5f2;color:#813d2d;font-family:Consolas,monospace;font-size:14px;overflow-wrap:anywhere}
+.dialog-actions .destructive{background:#b7442c;color:#fff;border:1px solid #a43b26}
+.dialog-actions .destructive:hover{background:#9e3825}

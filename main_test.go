@@ -1,11 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"net/http"
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -26,6 +29,43 @@ func TestGoldmarkPreview(t *testing.T) {
 	}
 	if !strings.Contains(result.HTML, "<table>") {
 		t.Fatalf("Goldmark table was not rendered: %s", result.HTML)
+	}
+}
+
+func TestAccessTraceWritesRelativeURLAndStatus(t *testing.T) {
+	var output bytes.Buffer
+	handler := accessTrace(&output, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.WriteHeader(http.StatusCreated)
+	}))
+	handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/api/posts?q=draft", nil))
+	if got, want := output.String(), "GET /api/posts?q=draft 201\n"; got != want {
+		t.Fatalf("trace = %q, want %q", got, want)
+	}
+}
+
+func TestAccessTraceDefaultsStatusToOK(t *testing.T) {
+	var output bytes.Buffer
+	handler := accessTrace(&output, http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
+	handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/", nil))
+	if got, want := output.String(), "GET / 200\n"; got != want {
+		t.Fatalf("trace = %q, want %q", got, want)
+	}
+}
+
+func TestStartupTraceIncludesRuntimeInformation(t *testing.T) {
+	var output bytes.Buffer
+	writeStartupTrace(&output, "127.0.0.1:1221", "/path/to/site")
+	for _, expected := range []string{
+		"Seicho " + version,
+		"OS: " + runtime.GOOS + "/" + runtime.GOARCH,
+		"Go: " + runtime.Version(),
+		"Listen: http://127.0.0.1:1221",
+		"Site: /path/to/site",
+		"Trace: enabled",
+	} {
+		if !strings.Contains(output.String(), expected) {
+			t.Errorf("startup trace does not contain %q: %s", expected, output.String())
+		}
 	}
 }
 

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"io/fs"
 	"log"
 	"mime"
@@ -16,6 +17,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -58,6 +60,7 @@ func main() {
 	root := flag.String("site", "", "Hugo site directory")
 	port := flag.Int("port", 1221, "listen port")
 	addr := flag.String("addr", "", "listen address (overrides -port)")
+	trace := flag.Bool("trace", false, "write access logs to stdout")
 	showVersion := flag.Bool("version", false, "show version")
 	flag.Usage = func() {
 		out := flag.CommandLine.Output()
@@ -101,8 +104,59 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Seicho: http://%s\n", ln.Addr())
-	log.Fatal(http.Serve(ln, securityHeaders(mux)))
+	var handler http.Handler = securityHeaders(mux)
+	if *trace {
+		writeStartupTrace(os.Stdout, ln.Addr().String(), s.getRoot())
+		handler = accessTrace(os.Stdout, handler)
+	} else {
+		fmt.Printf("Seicho: http://%s\n", ln.Addr())
+	}
+	log.Fatal(http.Serve(ln, handler))
+}
+
+func writeStartupTrace(output io.Writer, address, site string) {
+	if site == "" {
+		site = "(not selected)"
+	}
+	fmt.Fprintf(output, "Seicho %s\n", version)
+	fmt.Fprintf(output, "OS: %s/%s\n", runtime.GOOS, runtime.GOARCH)
+	fmt.Fprintf(output, "Go: %s\n", runtime.Version())
+	fmt.Fprintf(output, "PID: %d\n", os.Getpid())
+	fmt.Fprintf(output, "Listen: http://%s\n", address)
+	fmt.Fprintf(output, "Site: %s\n", site)
+	fmt.Fprintln(output, "Trace: enabled")
+}
+
+type statusWriter struct {
+	http.ResponseWriter
+	status int
+}
+
+func (w *statusWriter) WriteHeader(status int) {
+	if w.status != 0 {
+		return
+	}
+	w.status = status
+	w.ResponseWriter.WriteHeader(status)
+}
+
+func (w *statusWriter) Write(body []byte) (int, error) {
+	if w.status == 0 {
+		w.WriteHeader(http.StatusOK)
+	}
+	return w.ResponseWriter.Write(body)
+}
+
+func accessTrace(output io.Writer, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		writer := &statusWriter{ResponseWriter: w}
+		next.ServeHTTP(writer, r)
+		status := writer.status
+		if status == 0 {
+			status = http.StatusOK
+		}
+		fmt.Fprintf(output, "%s %s %d\n", r.Method, r.URL.RequestURI(), status)
+	})
 }
 
 func newMarkdownRenderer() goldmark.Markdown {

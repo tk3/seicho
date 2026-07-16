@@ -22,8 +22,11 @@ function render(){clearTimeout(renderTimer);const version=++renderVersion;render
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 $('#save').onclick=save;
 async function save(){if(!current)return;try{current=await api('/api/post',{method:'PUT',body:JSON.stringify({path:$('#path').value,originalPath:current.path,frontMatter:$('#front').value,body:$('#body').value,delimiter:current.delimiter,modified:current.modified})});$('#path').value=current.path;dirty=false;toast('保存しました');await loadPosts()}catch(e){toast(e.message,true)}}
-$('#delete').onclick=async()=>{if(!current||!confirm(`「${current.path}」を削除しますか？`))return;try{await api('/api/post?path='+encodeURIComponent(current.path),{method:'DELETE'});current=null;dirty=false;$('#editor').classList.add('hidden');$('#empty').classList.remove('hidden');await loadPosts();toast('削除しました')}catch(e){toast(e.message,true)}}
+function showDeletePost(show=true){$('#delete-post-modal').classList.toggle('hidden',!show)}
+$('#delete').onclick=()=>{if(!current)return;$('#delete-post-path').textContent=current.path;$('#delete-post-error').value='';showDeletePost()}
+$('#delete-post-form').onsubmit=async e=>{e.preventDefault();if(!current)return;try{await api('/api/post?path='+encodeURIComponent(current.path),{method:'DELETE'});showDeletePost(false);current=null;dirty=false;$('#editor').classList.add('hidden');$('#empty').classList.remove('hidden');await loadPosts();toast('削除しました')}catch(e){$('#delete-post-error').value=e.message}}
+$('#close-delete-post').onclick=$('#cancel-delete-post').onclick=()=>showDeletePost(false);
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();save()}});window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
-document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#new-post-modal').classList.contains('hidden')){showNewPost(false);return}if(siteConfigured&&!$('#setup').classList.contains('hidden'))showSetup(false)});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#new-post-modal').classList.contains('hidden')){showNewPost(false);return}if(!$('#delete-post-modal').classList.contains('hidden')){showDeletePost(false);return}if(siteConfigured&&!$('#setup').classList.contains('hidden'))showSetup(false)});
 function toast(msg,bad=false){const el=$('#toast');el.textContent=msg;el.style.background=bad?'#a93e2b':'';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2600)}
 boot().catch(e=>toast(e.message,true));
