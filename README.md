@@ -50,7 +50,7 @@ Hugoサイトを指定して起動する場合：
 ./seicho -version
 ```
 
-アクセスした相対URLとHTTPステータスを標準出力へ表示する場合は`-trace`を指定します。
+起動環境とアクセスの詳細を標準出力へ表示する場合は`-trace`を指定します。アクセスログにはリクエストID、HTTPメソッド、相対URL、HTTPステータス、処理時間、発生したAPIエラーが含まれます。panic時は同じリクエストIDとスタックトレースも出力します。
 
 ```bash
 ./seicho -port 1221 -trace
@@ -59,16 +59,16 @@ Hugoサイトを指定して起動する場合：
 出力例：
 
 ```text
-Seicho 0.2.2
+Seicho 0.2.3
 OS: windows/amd64
 Go: go1.26.5
 PID: 12345
 Listen: http://127.0.0.1:1221
 Site: /path/to/hugo-site
 Trace: enabled
-GET / 200
-GET /api/posts 200
-GET /api/post?path=posts%2Fexample.md 200
+[00000001] GET / 200 420µs
+[00000002] GET /api/posts 200 1.2ms
+[00000003] PUT /api/post 500 2.1ms error="open content/posts/example.md: permission denied"
 ```
 
 ## 機能

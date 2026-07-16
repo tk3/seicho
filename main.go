@@ -18,8 +18,10 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"runtime/debug"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/yuin/goldmark"
@@ -31,7 +33,7 @@ var webFiles embed.FS
 
 // version can be replaced at build time with:
 // go build -ldflags "-X main.version=1.0.0" .
-var version = "0.2.2"
+var version = "0.2.3"
 
 type server struct {
 	mu       sync.RWMutex
@@ -129,8 +131,15 @@ func writeStartupTrace(output io.Writer, address, site string) {
 
 type statusWriter struct {
 	http.ResponseWriter
-	status int
+	status    int
+	requestID string
+	err       error
 }
+
+func (w *statusWriter) recordError(err error)  { w.err = err }
+func (w *statusWriter) traceRequestID() string { return w.requestID }
+
+var requestSequence uint64
 
 func (w *statusWriter) WriteHeader(status int) {
 	if w.status != 0 {
@@ -148,14 +157,39 @@ func (w *statusWriter) Write(body []byte) (int, error) {
 }
 
 func accessTrace(output io.Writer, next http.Handler) http.Handler {
+	var outputMu sync.Mutex
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		writer := &statusWriter{ResponseWriter: w}
+		started := time.Now()
+		requestID := fmt.Sprintf("%08x", atomic.AddUint64(&requestSequence, 1))
+		writer := &statusWriter{ResponseWriter: w, requestID: requestID}
+		writer.Header().Set("X-Request-ID", requestID)
+		defer func() {
+			panicValue := recover()
+			if panicValue != nil {
+				if writer.status == 0 {
+					apiError(writer, http.StatusInternalServerError, errors.New("サーバー内部で予期しないエラーが発生しました"))
+				} else {
+					writer.status = http.StatusInternalServerError
+				}
+				writer.err = fmt.Errorf("panic: %v", panicValue)
+			}
+			status := writer.status
+			if status == 0 {
+				status = http.StatusOK
+			}
+			duration := time.Since(started).Round(time.Microsecond)
+			outputMu.Lock()
+			defer outputMu.Unlock()
+			if panicValue != nil {
+				fmt.Fprintf(output, "[%s] PANIC %v\n%s", requestID, panicValue, debug.Stack())
+			}
+			fmt.Fprintf(output, "[%s] %s %s %d %s", requestID, r.Method, r.URL.RequestURI(), status, duration)
+			if writer.err != nil {
+				fmt.Fprintf(output, " error=%q", writer.err.Error())
+			}
+			fmt.Fprintln(output)
+		}()
 		next.ServeHTTP(writer, r)
-		status := writer.status
-		if status == 0 {
-			status = http.StatusOK
-		}
-		fmt.Fprintf(output, "%s %s %d\n", r.Method, r.URL.RequestURI(), status)
 	})
 }
 
@@ -323,10 +357,18 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 		}
 		data, err := os.ReadFile(path)
 		if err != nil {
-			apiError(w, 404, errors.New("投稿が見つかりません"))
+			status := http.StatusInternalServerError
+			if errors.Is(err, os.ErrNotExist) {
+				status = http.StatusNotFound
+			}
+			apiError(w, status, fmt.Errorf("投稿ファイルを読み込めません: %w", err))
 			return
 		}
-		info, _ := os.Stat(path)
+		info, err := os.Stat(path)
+		if err != nil {
+			apiError(w, 500, fmt.Errorf("保存後のファイル情報を取得できません: %w", err))
+			return
+		}
 		front, body, delim := splitDocument(string(data))
 		rel, _ := filepath.Rel(filepath.Join(root, "content"), path)
 		jsonResponse(w, 200, postDocument{Path: filepath.ToSlash(rel), FrontMatter: front, Body: body, Delimiter: delim, Modified: fileVersion(info)})
@@ -456,7 +498,11 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if err := os.Remove(path); err != nil {
-			apiError(w, 404, errors.New("投稿が見つかりません"))
+			status := http.StatusInternalServerError
+			if errors.Is(err, os.ErrNotExist) {
+				status = http.StatusNotFound
+			}
+			apiError(w, status, fmt.Errorf("投稿ファイルを削除できません: %w", err))
 			return
 		}
 		w.WriteHeader(204)
@@ -529,7 +575,14 @@ func jsonResponse(w http.ResponseWriter, status int, v any) {
 	json.NewEncoder(w).Encode(v)
 }
 func apiError(w http.ResponseWriter, status int, err error) {
-	jsonResponse(w, status, map[string]string{"error": err.Error()})
+	if recorder, ok := w.(interface{ recordError(error) }); ok {
+		recorder.recordError(err)
+	}
+	response := map[string]string{"error": err.Error()}
+	if traced, ok := w.(interface{ traceRequestID() string }); ok {
+		response["requestId"] = traced.traceRequestID()
+	}
+	jsonResponse(w, status, response)
 }
 func methodNotAllowed(w http.ResponseWriter) {
 	apiError(w, 405, errors.New("許可されていない操作です"))

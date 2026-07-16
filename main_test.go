@@ -37,9 +37,13 @@ func TestAccessTraceWritesRelativeURLAndStatus(t *testing.T) {
 	handler := accessTrace(&output, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 	}))
-	handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/api/posts?q=draft", nil))
-	if got, want := output.String(), "GET /api/posts?q=draft 201\n"; got != want {
-		t.Fatalf("trace = %q, want %q", got, want)
+	recorder := httptest.NewRecorder()
+	handler.ServeHTTP(recorder, httptest.NewRequest("GET", "/api/posts?q=draft", nil))
+	if got := output.String(); !strings.Contains(got, "] GET /api/posts?q=draft 201 ") {
+		t.Fatalf("unexpected trace: %q", got)
+	}
+	if recorder.Header().Get("X-Request-ID") == "" {
+		t.Fatal("X-Request-ID was not set")
 	}
 }
 
@@ -47,8 +51,32 @@ func TestAccessTraceDefaultsStatusToOK(t *testing.T) {
 	var output bytes.Buffer
 	handler := accessTrace(&output, http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
 	handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/", nil))
-	if got, want := output.String(), "GET / 200\n"; got != want {
-		t.Fatalf("trace = %q, want %q", got, want)
+	if got := output.String(); !strings.Contains(got, "] GET / 200 ") {
+		t.Fatalf("unexpected trace: %q", got)
+	}
+}
+
+func TestAccessTraceIncludesAPIError(t *testing.T) {
+	var output bytes.Buffer
+	handler := accessTrace(&output, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		apiError(w, http.StatusInternalServerError, errors.New("disk write failed"))
+	}))
+	handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("PUT", "/api/post", nil))
+	if got := output.String(); !strings.Contains(got, `] PUT /api/post 500 `) || !strings.Contains(got, `error="disk write failed"`) {
+		t.Fatalf("unexpected error trace: %q", got)
+	}
+}
+
+func TestAccessTraceRecoversPanic(t *testing.T) {
+	var output bytes.Buffer
+	handler := accessTrace(&output, http.HandlerFunc(func(http.ResponseWriter, *http.Request) { panic("boom") }))
+	recorder := httptest.NewRecorder()
+	handler.ServeHTTP(recorder, httptest.NewRequest("GET", "/panic", nil))
+	if recorder.Code != http.StatusInternalServerError {
+		t.Fatalf("status = %d", recorder.Code)
+	}
+	if got := output.String(); !strings.Contains(got, "PANIC boom") || !strings.Contains(got, "TestAccessTraceRecoversPanic") || !strings.Contains(got, `error="panic: boom"`) {
+		t.Fatalf("panic trace is incomplete: %q", got)
 	}
 }
 
