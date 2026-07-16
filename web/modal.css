@@ -1,3 +1,8 @@
 .dialog{position:relative}
 .modal-close{position:absolute;top:12px;right:12px;width:34px;height:34px;padding:0;border-radius:50%;background:transparent;color:var(--muted);font-size:25px;font-weight:400;line-height:1}
 .modal-close:hover{background:#f0ede7;color:var(--ink)}
+.new-post-dialog{width:min(560px,90vw)}
+.new-post-dialog input{font-size:15px;font-weight:500}
+.dialog-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:4px}
+.dialog-actions .secondary{background:#eeece6;color:var(--ink);border:1px solid var(--line)}
+.dialog-actions .secondary:hover{background:#e5e1d9}

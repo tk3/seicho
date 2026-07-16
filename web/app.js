@@ -11,7 +11,10 @@ $('#search').oninput=renderList;
 $('#sort').onchange=renderList;
 async function openPost(path){if(dirty&&!confirm('保存していない変更を破棄しますか？'))return;current=await api('/api/post?path='+encodeURIComponent(path));$('#path').value=current.path;$('#front').value=current.frontMatter;$('#body').value=current.body;dirty=false;showEditor();render();renderList()}
 function showEditor(){ $('#empty').classList.add('hidden');$('#editor').classList.remove('hidden') }
-async function newPost(){if(dirty&&!confirm('保存していない変更を破棄しますか？'))return;const path=prompt('新しい投稿のパスを入力してください','posts/new-post.md');if(!path)return;try{current=await api('/api/post',{method:'POST',body:JSON.stringify({path})});$('#path').value=current.path;$('#front').value=current.frontMatter;$('#body').value=current.body;dirty=false;showEditor();render();await loadPosts();$('#body').focus();toast('Hugoのarchetypeから投稿を作成しました')}catch(e){toast(e.message,true)}}
+function showNewPost(show=true){$('#new-post-modal').classList.toggle('hidden',!show)}
+function newPost(){if(dirty&&!confirm('保存していない変更を破棄しますか？'))return;$('#new-post-path').value='posts/new-post.md';$('#new-post-error').value='';showNewPost();setTimeout(()=>{$('#new-post-path').focus();$('#new-post-path').select()},0)}
+$('#new-post-form').onsubmit=async e=>{e.preventDefault();const path=$('#new-post-path').value.trim();if(!path)return;try{current=await api('/api/post',{method:'POST',body:JSON.stringify({path})});showNewPost(false);$('#path').value=current.path;$('#front').value=current.frontMatter;$('#body').value=current.body;dirty=false;showEditor();render();await loadPosts();$('#body').focus();toast('Hugoのarchetypeから投稿を作成しました')}catch(e){$('#new-post-error').value=e.message}}
+$('#close-new-post').onclick=$('#cancel-new-post').onclick=()=>showNewPost(false);
 $('#new').onclick=$('#empty-new').onclick=newPost;
 ['path','front','body'].forEach(id=>$('#'+id).addEventListener('input',()=>{dirty=true;render()}));
 let renderTimer=0,renderVersion=0;
@@ -21,6 +24,6 @@ $('#save').onclick=save;
 async function save(){if(!current)return;try{current=await api('/api/post',{method:'PUT',body:JSON.stringify({path:$('#path').value,originalPath:current.path,frontMatter:$('#front').value,body:$('#body').value,delimiter:current.delimiter,modified:current.modified})});$('#path').value=current.path;dirty=false;toast('保存しました');await loadPosts()}catch(e){toast(e.message,true)}}
 $('#delete').onclick=async()=>{if(!current||!confirm(`「${current.path}」を削除しますか？`))return;try{await api('/api/post?path='+encodeURIComponent(current.path),{method:'DELETE'});current=null;dirty=false;$('#editor').classList.add('hidden');$('#empty').classList.remove('hidden');await loadPosts();toast('削除しました')}catch(e){toast(e.message,true)}}
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();save()}});window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&siteConfigured&&!$('#setup').classList.contains('hidden'))showSetup(false)});
+document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#new-post-modal').classList.contains('hidden')){showNewPost(false);return}if(siteConfigured&&!$('#setup').classList.contains('hidden'))showSetup(false)});
 function toast(msg,bad=false){const el=$('#toast');el.textContent=msg;el.style.background=bad?'#a93e2b':'';el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2600)}
 boot().catch(e=>toast(e.message,true));
