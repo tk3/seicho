@@ -13,6 +13,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Changed API errors to use stable, language-independent error codes while preserving localized messages and trace diagnostics.
 - Reduced the horizontal width of the Save button in the editor toolbar.
 - Updated UI and editor font stacks to use native system fonts consistently across Windows, macOS, and Linux.
+- Changed post titles in the Contents list to use regular font weight.
+- Removed the redundant × icon from the editor toolbar Delete button.
 
 ## [0.2.8] - 2026-07-17
 
