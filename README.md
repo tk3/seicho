@@ -61,7 +61,7 @@ Use `-trace` to write startup information and access details to standard output.
 Example output:
 
 ```text
-Seicho 0.2.6
+Seicho 0.2.7
 OS: windows/amd64
 Go: go1.26.5
 PID: 12345
