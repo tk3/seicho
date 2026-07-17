@@ -11,6 +11,11 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 - Added a Markdown-focused Zen Mode that hides navigation, metadata, preview, and destructive actions while retaining Save and Escape-to-exit controls.
 
+### Changed
+
+- Reordered editor actions to Zen Mode, Save, and Delete, with extra separation before Delete to reduce accidental clicks.
+- Matched the Zen Mode button dimensions to the Save button.
+
 ## [0.2.9] - 2026-07-17
 
 ### Changed
