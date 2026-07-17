@@ -2,6 +2,8 @@
 
 Seicho is a lightweight, local-only editor for managing files in a Hugo site's `content` directory from your browser.
 
+See [CHANGELOG.md](CHANGELOG.md) for release history.
+
 ## Getting started
 
 ```bash
