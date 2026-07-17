@@ -7,6 +7,16 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.8] - 2026-07-17
+
+### Added
+
+- Added Japanese and English language switching for the interface and API error messages, with the selection remembered in the browser.
+
+### Changed
+
+- Standardized the English new-post action label as "New Post".
+
 ## [0.2.7] - 2026-07-17
 
 ### Added

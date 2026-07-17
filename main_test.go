@@ -67,6 +67,30 @@ func TestAccessTraceIncludesAPIError(t *testing.T) {
 	}
 }
 
+func TestAPIErrorUsesRequestedLanguage(t *testing.T) {
+	handler := languageResponses(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		apiError(w, http.StatusBadRequest, errors.New("投稿パスが不正です"))
+	}))
+	req := httptest.NewRequest("GET", "/api/post", nil)
+	req.Header.Set("Accept-Language", "en")
+	recorder := httptest.NewRecorder()
+	handler.ServeHTTP(recorder, req)
+	if got := recorder.Body.String(); !strings.Contains(got, "The post path is invalid.") {
+		t.Fatalf("error was not translated: %s", got)
+	}
+}
+
+func TestAPIErrorDefaultsToJapanese(t *testing.T) {
+	handler := languageResponses(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		apiError(w, http.StatusBadRequest, errors.New("投稿パスが不正です"))
+	}))
+	recorder := httptest.NewRecorder()
+	handler.ServeHTTP(recorder, httptest.NewRequest("GET", "/api/post", nil))
+	if got := recorder.Body.String(); !strings.Contains(got, "投稿パスが不正です") {
+		t.Fatalf("unexpected default language: %s", got)
+	}
+}
+
 func TestAccessTraceRecoversPanic(t *testing.T) {
 	var output bytes.Buffer
 	handler := accessTrace(&output, http.HandlerFunc(func(http.ResponseWriter, *http.Request) { panic("boom") }))

@@ -33,7 +33,7 @@ var webFiles embed.FS
 
 // version can be replaced at build time with:
 // go build -ldflags "-X main.version=1.0.0" .
-var version = "0.2.7"
+var version = "0.2.8"
 
 type server struct {
 	mu       sync.RWMutex
@@ -106,7 +106,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var handler http.Handler = securityHeaders(mux)
+	var handler http.Handler = securityHeaders(languageResponses(mux))
 	if *trace {
 		writeStartupTrace(os.Stdout, ln.Addr().String(), s.getRoot())
 		handler = accessTrace(os.Stdout, handler)
@@ -138,6 +138,12 @@ type statusWriter struct {
 
 func (w *statusWriter) recordError(err error)  { w.err = err }
 func (w *statusWriter) traceRequestID() string { return w.requestID }
+func (w *statusWriter) responseLanguage() string {
+	if localized, ok := w.ResponseWriter.(interface{ responseLanguage() string }); ok {
+		return localized.responseLanguage()
+	}
+	return "ja"
+}
 
 var requestSequence uint64
 
@@ -231,6 +237,23 @@ func securityHeaders(next http.Handler) http.Handler {
 		w.Header().Set("X-Content-Type-Options", "nosniff")
 		w.Header().Set("Content-Security-Policy", "default-src 'self'; style-src 'self'; script-src 'self'")
 		next.ServeHTTP(w, r)
+	})
+}
+
+type languageWriter struct {
+	http.ResponseWriter
+	language string
+}
+
+func (w *languageWriter) responseLanguage() string { return w.language }
+
+func languageResponses(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		language := "ja"
+		if strings.HasPrefix(strings.ToLower(r.Header.Get("Accept-Language")), "en") {
+			language = "en"
+		}
+		next.ServeHTTP(&languageWriter{ResponseWriter: w, language: language}, r)
 	})
 }
 
@@ -578,11 +601,54 @@ func apiError(w http.ResponseWriter, status int, err error) {
 	if recorder, ok := w.(interface{ recordError(error) }); ok {
 		recorder.recordError(err)
 	}
-	response := map[string]string{"error": err.Error()}
+	message := err.Error()
+	if localized, ok := w.(interface{ responseLanguage() string }); ok {
+		message = localizeError(message, localized.responseLanguage())
+	}
+	response := map[string]string{"error": message}
 	if traced, ok := w.(interface{ traceRequestID() string }); ok {
 		response["requestId"] = traced.traceRequestID()
 	}
 	jsonResponse(w, status, response)
+}
+
+func localizeError(message, language string) string {
+	if language != "en" {
+		return message
+	}
+	exact := map[string]string{
+		"サーバー内部で予期しないエラーが発生しました":          "An unexpected internal server error occurred.",
+		"指定したフォルダーが見つかりません":               "The specified folder was not found.",
+		"Hugoサイト設定ファイルが見つかりません":           "No Hugo site configuration file was found.",
+		"Hugoサイトを選択してください":                "Select a Hugo site first.",
+		"同じパスの投稿がすでに存在します":                "A post already exists at the same path.",
+		"hugo newがタイムアウトしました":             "hugo new timed out.",
+		"hugo newは成功しましたが、生成ファイルを読み込めません": "hugo new succeeded, but the generated file could not be read.",
+		"保存後にファイルが変更されています。再読み込みしてください":   "The file has been modified since it was loaded. Reload it and try again.",
+		"変更先のパスには既に投稿が存在します":              "A post already exists at the destination path.",
+		"保存後のファイル内容が一致しません":               "The saved file content does not match the requested content.",
+		"投稿パスが不正です":                       "The post path is invalid.",
+		"拡張子は .md または .markdown にしてください":  "Use the .md or .markdown file extension.",
+		"contentフォルダー外は操作できません":           "Files outside the content folder cannot be accessed.",
+		"許可されていない操作です":                    "This operation is not allowed.",
+	}
+	if translated, ok := exact[message]; ok {
+		return translated
+	}
+	prefixes := []struct{ ja, en string }{
+		{"投稿ファイルを読み込めません: ", "Could not read the post file: "},
+		{"保存後のファイル情報を取得できません: ", "Could not read the saved file information: "},
+		{"hugo newの実行に失敗しました: ", "Failed to run hugo new: "},
+		{"保存後のファイルを確認できません: ", "Could not verify the saved file: "},
+		{"元ファイルを削除できないため名前を変更できません: ", "Could not rename the post because the original file could not be removed: "},
+		{"投稿ファイルを削除できません: ", "Could not delete the post file: "},
+	}
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(message, prefix.ja) {
+			return prefix.en + strings.TrimPrefix(message, prefix.ja)
+		}
+	}
+	return message
 }
 func methodNotAllowed(w http.ResponseWriter) {
 	apiError(w, 405, errors.New("許可されていない操作です"))
