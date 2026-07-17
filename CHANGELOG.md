@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.9] - 2026-07-17
+
 ### Changed
 
 - Simplified the site selection dialog by relying on automatic browser-language detection and the main header language control.
