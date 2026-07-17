@@ -1,0 +1,5 @@
+:root{--button:#607d8b;--button-hover:#526d78;--button-soft:#e8eef0;--button-border:#aebcc2;--button-ink:#405862}
+.primary{background:var(--button);color:#fff}.primary:hover{background:var(--button-hover)}
+.editor-toolbar .toolbar-save{box-shadow:0 3px 8px rgba(82,109,120,.24)}
+.ghost{background:transparent;color:#dfe9ec;border-color:#8fa2ab}.ghost:hover{background:rgba(255,255,255,.1);border-color:#c2d0d5;color:#fff}
+.dialog-actions .discard-action{background:transparent;color:#9a4937;border:1px solid transparent}.dialog-actions .discard-action:hover{background:#fff1ed;color:#9a4937;border-color:#eed3ca}
