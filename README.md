@@ -1,65 +1,65 @@
 # Seicho
 
-Hugo の `content` フォルダーをブラウザから編集する、ローカル専用の軽量エディターです。
+Seicho is a lightweight, local-only editor for managing files in a Hugo site's `content` directory from your browser.
 
-## 起動
+## Getting started
 
 ```bash
 go run . -port 1221
 ```
 
-ブラウザで <http://127.0.0.1:1221> を開き、Hugoサイトの絶対パスを入力します。起動時に指定することもできます。
+Open <http://127.0.0.1:1221> in your browser and enter the absolute path to your Hugo site. You can also specify the site when starting Seicho.
 
 ```bash
 go run . -site /path/to/hugo-site
 ```
 
-実行ファイルを作る場合は次を実行します。
+To build an executable:
 
 ```bash
 go build -buildvcs=false -o seicho .
 ```
 
-ビルド済みの実行ファイルはGit Bashから次のように起動できます。
+Run the built executable from Git Bash:
 
 ```bash
 ./seicho -port 1221
 ```
 
-Hugoサイトを指定して起動する場合：
+To specify a Hugo site at startup:
 
 ```bash
 ./seicho -site /path/to/hugo-site
 ```
 
-ポート番号を変更する場合は`-port`を指定します。未指定時は`1221`です。
+Use `-port` to change the port. The default is `1221`.
 
 ```bash
 ./seicho -port 8080
 ```
 
-サイトとポート番号は同時に指定できます。
+You can specify the site and port together:
 
 ```bash
 ./seicho -site /path/to/hugo-site -port 8080
 ```
 
-バージョン情報を確認する場合：
+To display version information:
 
 ```bash
 ./seicho -version
 ```
 
-起動環境とアクセスの詳細を標準出力へ表示する場合は`-trace`を指定します。アクセスログにはリクエストID、HTTPメソッド、相対URL、HTTPステータス、処理時間、発生したAPIエラーが含まれます。panic時は同じリクエストIDとスタックトレースも出力します。
+Use `-trace` to write startup information and access details to standard output. Access logs include a request ID, HTTP method, relative URL, HTTP status, processing time, and any API error. If a panic occurs, Seicho also writes a stack trace with the same request ID.
 
 ```bash
 ./seicho -port 1221 -trace
 ```
 
-出力例：
+Example output:
 
 ```text
-Seicho 0.2.5
+Seicho 0.2.6
 OS: windows/amd64
 Go: go1.26.5
 PID: 12345
@@ -71,22 +71,26 @@ Trace: enabled
 [00000003] PUT /api/post 500 2.1ms error="open content/posts/example.md: permission denied"
 ```
 
-## 機能
+## Features
 
-- Markdown投稿の一覧・検索・更新日時順の並べ替え
-- `hugo new content`による新規投稿作成（`archetypes/default.md`対応）
-- YAML/TOML Front Matterを保った編集
-- 新規投稿、保存、削除
-- Hugoと同じGoldmarkを使ったMarkdownライブプレビュー
-- 外部変更との上書き競合検出
-- `content` 外へのファイル操作を防止
+- List, search, and sort Markdown posts by modification time
+- Create posts with `hugo new content`, including support for `archetypes/default.md`
+- Edit content while preserving YAML or TOML front matter
+- Create, save, rename, and delete posts
+- Live Markdown preview using Goldmark, the same parser used by Hugo
+- Detect conflicting external file changes before overwriting
+- Prevent file operations outside the site's `content` directory
 
-現時点ではHugoプレビューサーバーの起動、画像アップロード、Git操作は未対応です。
+Starting a Hugo preview server, uploading images, and performing Git operations are not currently supported.
 
-簡易プレビューはHugoと同じGoldmarkパーサーを使用します。CommonMark、テーブル、取り消し線、タスクリスト、定義リスト、脚注などに対応します。Shortcode、テーマ、Render Hookを含む最終表示の再現には、将来対応予定のHugoプレビューサーバーが必要です。
+The live preview uses the same Goldmark parser as Hugo. It supports CommonMark, tables, strikethrough, task lists, definition lists, footnotes, and more. Reproducing the final site output—including shortcodes, themes, and render hooks—will require the planned Hugo preview server integration.
 
-新規投稿の作成では、`hugo`コマンドへPATHが通っている必要があります。選択したサイトを作業ディレクトリとして、次の形式のコマンドを実行します。
+The `hugo` command must be available on your `PATH` to create new posts. Seicho runs the following command with the selected site as its working directory:
 
 ```bash
 hugo new content posts/example.md
 ```
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE).
