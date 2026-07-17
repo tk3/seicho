@@ -16,7 +16,9 @@ When updating the application version:
 2. Move the relevant entries from `Unreleased` into a new version section.
 3. Use the heading format `## [x.y.z] - YYYY-MM-DD`.
 4. Leave an empty `## [Unreleased]` section at the top.
-5. Update version examples in documentation when necessary.
+5. Update documentation that identifies the current release when necessary.
+   Do not update the version number shown in README command-output examples,
+   including the `-trace` output example, solely because the application version changed.
 6. Run the JavaScript syntax check and all Go tests.
 7. Rebuild the executable and verify its reported version.
 8. Include the version change and `CHANGELOG.md` in the same commit when a commit is requested.
