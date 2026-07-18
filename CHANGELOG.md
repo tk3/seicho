@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.11] - 2026-07-18
+
 ### Fixed
 
 - Widened the unsaved-changes dialog so its Japanese heading does not wrap awkwardly.

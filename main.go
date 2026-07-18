@@ -33,7 +33,7 @@ var webFiles embed.FS
 
 // version can be replaced at build time with:
 // go build -ldflags "-X main.version=1.0.0" .
-var version = "0.2.10"
+var version = "0.2.11"
 
 type server struct {
 	mu       sync.RWMutex
