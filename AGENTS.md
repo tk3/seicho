@@ -25,6 +25,9 @@ When updating the application version:
 
 ## Verification
 
+- Whenever source or embedded web files that affect the executable are changed,
+  run the applicable syntax checks and tests, then rebuild the executable.
+- Do this automatically without waiting for an explicit build request.
 - Check JavaScript with `node --check web/app.js`.
 - Run Go tests with `go test ./...`.
 - Build with `go build -buildvcs=false -o seicho .`.
