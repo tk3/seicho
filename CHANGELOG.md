@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.12] - 2026-07-19
+
 ### Changed
 
 - Unified the header and sidebar backgrounds with the same soft neutral color.
