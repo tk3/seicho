@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Changed
+
+- Made Zen Mode a seamless white writing canvas by removing the borders between the editor and its side margins.
+
 ## [0.2.12] - 2026-07-19
 
 ### Changed
