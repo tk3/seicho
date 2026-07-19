@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- Added a localized real-time character count to the upper-right Zen Mode toolbar.
+
 ### Changed
 
 - Made Zen Mode a seamless white writing canvas by removing the borders between the editor and its side margins.
