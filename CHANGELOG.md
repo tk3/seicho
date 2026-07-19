@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- Added resource-style editor URLs that restore the selected post after a browser reload and stay synchronized after creating, renaming, or deleting posts.
+
 ## [0.2.13] - 2026-07-19
 
 ### Added

@@ -270,7 +270,7 @@ func languageResponses(next http.Handler) http.Handler {
 
 func static(w http.ResponseWriter, r *http.Request) {
 	name := "web" + r.URL.Path
-	if r.URL.Path == "/" {
+	if r.URL.Path == "/" || strings.HasPrefix(r.URL.Path, "/edit/") {
 		name = "web/index.html"
 	}
 	b, err := webFiles.ReadFile(name)

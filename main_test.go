@@ -32,6 +32,20 @@ func TestGoldmarkPreview(t *testing.T) {
 	}
 }
 
+func TestStaticServesEditorRoutes(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	static(recorder, httptest.NewRequest("GET", "/edit/posts/hello.md", nil))
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, body = %s", recorder.Code, recorder.Body.String())
+	}
+	if contentType := recorder.Header().Get("Content-Type"); !strings.HasPrefix(contentType, "text/html") {
+		t.Fatalf("Content-Type = %q", contentType)
+	}
+	if !strings.Contains(recorder.Body.String(), "<title>Seicho</title>") {
+		t.Fatal("editor route did not serve the application shell")
+	}
+}
+
 func TestAccessTraceWritesRelativeURLAndStatus(t *testing.T) {
 	var output bytes.Buffer
 	handler := accessTrace(&output, http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {

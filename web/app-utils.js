@@ -26,7 +26,17 @@ async function requestJSON(fetchImplementation,url,options={},locale='en'){
  }
  return response.status===204?null:response.json();
 }
-const api={escapeHTML,selectLocale,filterAndSortPosts,buildPostPayload,requestJSON};
+function postRoute(path){
+ return '/edit/'+String(path).split('/').map(segment=>encodeURIComponent(segment)).join('/');
+}
+function postPathFromRoute(pathname){
+ if(!String(pathname).startsWith('/edit/'))return null;
+ const encodedPath=String(pathname).slice('/edit/'.length);
+ if(!encodedPath)return null;
+ try{return encodedPath.split('/').map(segment=>decodeURIComponent(segment)).join('/')}
+ catch(error){return null}
+}
+const api={escapeHTML,selectLocale,filterAndSortPosts,buildPostPayload,requestJSON,postRoute,postPathFromRoute};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else Object.assign(root,api);
 })(typeof globalThis==='object'?globalThis:this);
