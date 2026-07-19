@@ -20,7 +20,7 @@ When updating the application version:
    Do not update the version number shown in README command-output examples,
    including the `-trace` output example, solely because the application version changed.
 6. If the release includes functional changes that have not yet been verified,
-   run the applicable syntax checks and Go tests. Skip these checks when only
+   run the applicable syntax checks and tests. Skip these checks when only
    the version metadata and changelog are being updated.
 7. Rebuild the executable and verify its reported version.
 8. Include the version change and `CHANGELOG.md` in the same commit when a commit is requested.
@@ -28,15 +28,19 @@ When updating the application version:
 ## Verification
 
 - Whenever source or embedded web files that affect the executable are changed,
-  run the applicable syntax checks and tests, then rebuild the executable.
-- Do this automatically without waiting for an explicit build request.
-- For version-only updates limited to version metadata and the changelog, skip
-  syntax checks and tests, but still rebuild and verify the executable version.
+  automatically run the applicable syntax checks and tests, then rebuild the
+  executable.
 - Check JavaScript syntax for every file under `web/` and `tests/` with a
   `.js` extension.
 - When adding or changing testable JavaScript behavior, add or update the
   corresponding unit tests.
 - When practical, include a regression test with JavaScript bug fixes.
 - Run JavaScript unit tests with `node --test`.
-- Run Go tests with `go test ./...`.
-- Build with `go build -buildvcs=false -o seicho .`.
+- Format changed Go files with `gofmt -w` before testing.
+- Run Go tests without cached results with `go test -count=1 ./...`.
+- On Windows, build with `go build -buildvcs=false -o seicho.exe .`.
+
+## Commit checks
+
+- Before committing, run `git diff --check`.
+- Check `git status` and confirm that only the intended files are included.
