@@ -10,7 +10,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 ### Changed
 
 - Unified the header and sidebar backgrounds with the same soft neutral color.
-- Highlighted the Markdown pane heading with a soft blue-gray background.
+- Highlighted the Markdown pane heading with a near-white blue-gray background.
 
 ## [0.2.11] - 2026-07-18
 
