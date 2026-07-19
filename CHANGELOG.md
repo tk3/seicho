@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.13] - 2026-07-19
+
 ### Added
 
 - Added a localized real-time character count to the upper-right Zen Mode toolbar.
