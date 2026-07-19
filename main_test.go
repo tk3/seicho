@@ -44,6 +44,21 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 	if !strings.Contains(recorder.Body.String(), "<title>Seicho</title>") {
 		t.Fatal("editor route did not serve the application shell")
 	}
+	for _, asset := range []string{"/tokens.css", "/router.js", "/i18n.js", "/editor-view.js"} {
+		if !strings.Contains(recorder.Body.String(), asset) {
+			t.Errorf("application shell does not reference %s", asset)
+		}
+	}
+}
+
+func TestStaticServesRefactoredAssets(t *testing.T) {
+	for _, path := range []string{"/tokens.css", "/router.js", "/i18n.js", "/editor-view.js"} {
+		recorder := httptest.NewRecorder()
+		static(recorder, httptest.NewRequest("GET", path, nil))
+		if recorder.Code != http.StatusOK {
+			t.Errorf("GET %s: status = %d", path, recorder.Code)
+		}
+	}
 }
 
 func TestAccessTraceWritesRelativeURLAndStatus(t *testing.T) {
@@ -209,6 +224,24 @@ func TestFileVersionSurvivesJSONRoundTrip(t *testing.T) {
 	}
 	if decoded.Modified != doc.Modified {
 		t.Fatalf("modified changed from %q to %q", doc.Modified, decoded.Modified)
+	}
+}
+
+func TestReadPostDocumentBuildsEditorDocument(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "content", "posts", "hello.md")
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(path, []byte("---\ntitle: Hello\n---\n\nBody"), 0644); err != nil {
+		t.Fatal(err)
+	}
+	doc, err := readPostDocument(root, path, "read_post_failed")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if doc.Path != "posts/hello.md" || doc.FrontMatter != "title: Hello" || doc.Body != "Body" || doc.Delimiter != "---" || doc.Modified == "" {
+		t.Fatalf("unexpected document: %#v", doc)
 	}
 }
 

@@ -1,0 +1,18 @@
+:root{
+ --ink:#1d252c;
+ --muted:#66727c;
+ --paper:#f7f5f0;
+ --panel:#fff;
+ --line:#ddd9d0;
+ --accent:#da5b3a;
+ --deep:#24343d;
+ --navigation:#f3f1ec;
+ --editor-heading:#f7f9fa;
+ --button:#607d8b;
+ --button-hover:#526d78;
+ --button-soft:#e8eef0;
+ --button-border:#aebcc2;
+ --button-ink:#405862;
+ --font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans JP","Yu Gothic UI",sans-serif;
+ --font-mono:ui-monospace,"Cascadia Mono",SFMono-Regular,Menlo,Consolas,monospace;
+}

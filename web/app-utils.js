@@ -15,6 +15,8 @@ function filterAndSortPosts(posts,query,sort){
  }[sort];
  return posts.filter(post=>(post.title+' '+post.path).toLowerCase().includes(normalizedQuery)).sort((a,b)=>compare(a,b)||a.path.localeCompare(b.path));
 }
+const sortOrders=['modified-desc','modified-asc','date-desc'];
+function selectSortOrder(storedOrder){return sortOrders.includes(storedOrder)?storedOrder:'modified-desc'}
 function buildPostPayload(fields,current){
  return {path:fields.path,originalPath:current.path,frontMatter:fields.frontMatter,body:fields.body,delimiter:current.delimiter,modified:current.modified};
 }
@@ -26,17 +28,7 @@ async function requestJSON(fetchImplementation,url,options={},locale='en'){
  }
  return response.status===204?null:response.json();
 }
-function postRoute(path){
- return '/edit/'+String(path).split('/').map(segment=>encodeURIComponent(segment)).join('/');
-}
-function postPathFromRoute(pathname){
- if(!String(pathname).startsWith('/edit/'))return null;
- const encodedPath=String(pathname).slice('/edit/'.length);
- if(!encodedPath)return null;
- try{return encodedPath.split('/').map(segment=>decodeURIComponent(segment)).join('/')}
- catch(error){return null}
-}
-const api={escapeHTML,selectLocale,filterAndSortPosts,buildPostPayload,requestJSON,postRoute,postPathFromRoute};
+const api={escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,buildPostPayload,requestJSON};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else Object.assign(root,api);
 })(typeof globalThis==='object'?globalThis:this);

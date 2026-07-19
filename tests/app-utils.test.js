@@ -1,6 +1,6 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {escapeHTML,selectLocale,filterAndSortPosts,buildPostPayload,requestJSON,postRoute,postPathFromRoute}=require('../web/app-utils.js');
+const {escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,buildPostPayload,requestJSON}=require('../web/app-utils.js');
 
 test('escapes HTML-sensitive characters',()=>{
  assert.equal(escapeHTML(`<a title="x">Tom & Jerry's</a>`),'&lt;a title=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/a&gt;');
@@ -52,6 +52,14 @@ test('does not mutate the original posts array while sorting',()=>{
  assert.deepEqual(posts.map(post=>post.path),originalOrder);
 });
 
+test('restores supported sort orders and rejects stale values',()=>{
+ assert.equal(selectSortOrder('modified-desc'),'modified-desc');
+ assert.equal(selectSortOrder('modified-asc'),'modified-asc');
+ assert.equal(selectSortOrder('date-desc'),'date-desc');
+ assert.equal(selectSortOrder('unknown-order'),'modified-desc');
+ assert.equal(selectSortOrder(null),'modified-desc');
+});
+
 test('builds a save payload without changing Markdown whitespace',()=>{
  const payload=buildPostPayload({path:'posts/renamed.md',frontMatter:'title: Test',body:'\nFirst line'}, {path:'posts/original.md',delimiter:'---',modified:'stamp'});
  assert.deepEqual(payload,{path:'posts/renamed.md',originalPath:'posts/original.md',frontMatter:'title: Test',body:'\nFirst line',delimiter:'---',modified:'stamp'});
@@ -75,20 +83,4 @@ test('throws the API error message from a JSON response',async()=>{
 
 test('falls back to the HTTP status text for a non-JSON error',async()=>{
  await assert.rejects(()=>requestJSON(async()=>({ok:false,status:500,statusText:'Server Error',json:async()=>{throw Error('not json')}}),'/api/post'),/Server Error/);
-});
-
-test('builds an editor route while preserving path hierarchy',()=>{
- assert.equal(postRoute('posts/hello world.md'),'/edit/posts/hello%20world.md');
- assert.equal(postRoute('記事/清張.md'),'/edit/%E8%A8%98%E4%BA%8B/%E6%B8%85%E5%BC%B5.md');
-});
-
-test('reads a post path from an editor route',()=>{
- assert.equal(postPathFromRoute('/edit/posts/hello%20world.md'),'posts/hello world.md');
- assert.equal(postPathFromRoute('/edit/%E8%A8%98%E4%BA%8B/%E6%B8%85%E5%BC%B5.md'),'記事/清張.md');
-});
-
-test('ignores non-editor and malformed routes',()=>{
- assert.equal(postPathFromRoute('/'),null);
- assert.equal(postPathFromRoute('/edit/'),null);
- assert.equal(postPathFromRoute('/edit/%E0%A4%A'),null);
 });

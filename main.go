@@ -384,165 +384,186 @@ func (s *server) post(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Method {
 	case http.MethodGet:
-		path, err := safePostPath(root, r.URL.Query().Get("path"))
-		if err != nil {
-			apiError(w, 400, err)
-			return
-		}
-		data, err := os.ReadFile(path)
-		if err != nil {
-			status := http.StatusInternalServerError
-			if errors.Is(err, os.ErrNotExist) {
-				status = http.StatusNotFound
-			}
-			apiError(w, status, codedError("read_post_failed", err))
-			return
-		}
-		info, err := os.Stat(path)
-		if err != nil {
-			apiError(w, 500, codedError("read_file_info_failed", err))
-			return
-		}
-		front, body, delim := splitDocument(string(data))
-		rel, _ := filepath.Rel(filepath.Join(root, "content"), path)
-		jsonResponse(w, 200, postDocument{Path: filepath.ToSlash(rel), FrontMatter: front, Body: body, Delimiter: delim, Modified: fileVersion(info)})
+		s.getPost(w, r, root)
 	case http.MethodPost:
-		var req struct {
-			Path string `json:"path"`
-		}
-		if err := decodeJSON(r, &req); err != nil {
-			apiError(w, 400, err)
-			return
-		}
-		path, err := safePostPath(root, req.Path)
-		if err != nil {
-			apiError(w, 400, err)
-			return
-		}
-		if _, err := os.Stat(path); err == nil {
-			apiError(w, 409, codedError("post_already_exists", nil))
-			return
-		}
-		rel, _ := filepath.Rel(filepath.Join(root, "content"), path)
-		ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
-		defer cancel()
-		cmd := exec.CommandContext(ctx, "hugo", "new", "content", filepath.ToSlash(rel))
-		cmd.Dir = root
-		output, err := cmd.CombinedOutput()
-		if err != nil {
-			if errors.Is(ctx.Err(), context.DeadlineExceeded) {
-				apiError(w, 504, codedError("hugo_new_timeout", ctx.Err()))
-				return
-			}
-			message := strings.TrimSpace(string(output))
-			if message == "" {
-				message = err.Error()
-			}
-			apiError(w, 500, codedError("hugo_new_failed", errors.New(message)))
-			return
-		}
-		data, err := os.ReadFile(path)
-		if err != nil {
-			apiError(w, 500, codedError("read_generated_post_failed", err))
-			return
-		}
-		info, err := os.Stat(path)
-		if err != nil {
-			apiError(w, 500, codedError("read_file_info_failed", err))
-			return
-		}
-		front, body, delim := splitDocument(string(data))
-		jsonResponse(w, http.StatusCreated, postDocument{Path: filepath.ToSlash(rel), FrontMatter: front, Body: body, Delimiter: delim, Modified: fileVersion(info)})
+		s.createPost(w, r, root)
 	case http.MethodPut:
-		var doc postDocument
-		if err := decodeJSON(r, &doc); err != nil {
-			apiError(w, 400, err)
-			return
-		}
-		path, err := safePostPath(root, doc.Path)
-		if err != nil {
-			apiError(w, 400, err)
-			return
-		}
-		originalPath := path
-		if doc.OriginalPath != "" {
-			originalPath, err = safePostPath(root, doc.OriginalPath)
-			if err != nil {
-				apiError(w, 400, err)
-				return
-			}
-		}
-		renaming := filepath.Clean(originalPath) != filepath.Clean(path)
-		if info, err := os.Stat(originalPath); err == nil && doc.Modified != "" && fileVersion(info) != doc.Modified {
-			apiError(w, 409, codedError("file_modified", nil))
-			return
-		}
-		if renaming {
-			if _, err := os.Stat(path); err == nil {
-				apiError(w, 409, codedError("destination_exists", nil))
-				return
-			} else if !errors.Is(err, os.ErrNotExist) {
-				apiError(w, 500, codedError("inspect_destination_failed", err))
-				return
-			}
-		}
-		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-			apiError(w, 500, codedError("create_post_directory_failed", err))
-			return
-		}
-		delim := doc.Delimiter
-		if delim != "+++" {
-			delim = "---"
-		}
-		content := delim + "\n" + strings.TrimSpace(doc.FrontMatter) + "\n" + delim + "\n\n" + doc.Body
-		tmp := path + ".seicho-tmp"
-		if err := os.WriteFile(tmp, []byte(content), 0644); err != nil {
-			apiError(w, 500, codedError("write_post_failed", err))
-			return
-		}
-		if err := os.Rename(tmp, path); err != nil {
-			os.Remove(tmp)
-			apiError(w, 500, codedError("replace_post_failed", err))
-			return
-		}
-		saved, err := os.ReadFile(path)
-		if err != nil {
-			apiError(w, 500, codedError("verify_saved_post_failed", err))
-			return
-		}
-		if !bytes.Equal(saved, []byte(content)) {
-			apiError(w, 500, codedError("saved_content_mismatch", nil))
-			return
-		}
-		if renaming {
-			if err := os.Remove(originalPath); err != nil {
-				os.Remove(path)
-				apiError(w, 500, codedError("remove_original_post_failed", err))
-				return
-			}
-		}
-		info, _ := os.Stat(path)
-		doc.OriginalPath = ""
-		doc.Modified = fileVersion(info)
-		jsonResponse(w, 200, doc)
+		s.updatePost(w, r, root)
 	case http.MethodDelete:
-		path, err := safePostPath(root, r.URL.Query().Get("path"))
-		if err != nil {
-			apiError(w, 400, err)
-			return
-		}
-		if err := os.Remove(path); err != nil {
-			status := http.StatusInternalServerError
-			if errors.Is(err, os.ErrNotExist) {
-				status = http.StatusNotFound
-			}
-			apiError(w, status, codedError("delete_post_failed", err))
-			return
-		}
-		w.WriteHeader(204)
+		s.deletePost(w, r, root)
 	default:
 		methodNotAllowed(w)
 	}
+}
+
+func (s *server) getPost(w http.ResponseWriter, r *http.Request, root string) {
+	path, err := safePostPath(root, r.URL.Query().Get("path"))
+	if err != nil {
+		apiError(w, 400, err)
+		return
+	}
+	doc, err := readPostDocument(root, path, "read_post_failed")
+	if err != nil {
+		status := http.StatusInternalServerError
+		if errors.Is(err, os.ErrNotExist) {
+			status = http.StatusNotFound
+		}
+		apiError(w, status, err)
+		return
+	}
+	jsonResponse(w, 200, doc)
+}
+
+func (s *server) createPost(w http.ResponseWriter, r *http.Request, root string) {
+	var req struct {
+		Path string `json:"path"`
+	}
+	if err := decodeJSON(r, &req); err != nil {
+		apiError(w, 400, err)
+		return
+	}
+	path, err := safePostPath(root, req.Path)
+	if err != nil {
+		apiError(w, 400, err)
+		return
+	}
+	if _, err := os.Stat(path); err == nil {
+		apiError(w, 409, codedError("post_already_exists", nil))
+		return
+	}
+	rel, _ := filepath.Rel(filepath.Join(root, "content"), path)
+	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "hugo", "new", "content", filepath.ToSlash(rel))
+	cmd.Dir = root
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
+			apiError(w, 504, codedError("hugo_new_timeout", ctx.Err()))
+			return
+		}
+		message := strings.TrimSpace(string(output))
+		if message == "" {
+			message = err.Error()
+		}
+		apiError(w, 500, codedError("hugo_new_failed", errors.New(message)))
+		return
+	}
+	doc, err := readPostDocument(root, path, "read_generated_post_failed")
+	if err != nil {
+		apiError(w, 500, err)
+		return
+	}
+	jsonResponse(w, http.StatusCreated, doc)
+}
+
+func (s *server) updatePost(w http.ResponseWriter, r *http.Request, root string) {
+	var doc postDocument
+	if err := decodeJSON(r, &doc); err != nil {
+		apiError(w, 400, err)
+		return
+	}
+	path, err := safePostPath(root, doc.Path)
+	if err != nil {
+		apiError(w, 400, err)
+		return
+	}
+	originalPath := path
+	if doc.OriginalPath != "" {
+		originalPath, err = safePostPath(root, doc.OriginalPath)
+		if err != nil {
+			apiError(w, 400, err)
+			return
+		}
+	}
+	renaming := filepath.Clean(originalPath) != filepath.Clean(path)
+	if info, err := os.Stat(originalPath); err == nil && doc.Modified != "" && fileVersion(info) != doc.Modified {
+		apiError(w, 409, codedError("file_modified", nil))
+		return
+	}
+	if renaming {
+		if _, err := os.Stat(path); err == nil {
+			apiError(w, 409, codedError("destination_exists", nil))
+			return
+		} else if !errors.Is(err, os.ErrNotExist) {
+			apiError(w, 500, codedError("inspect_destination_failed", err))
+			return
+		}
+	}
+	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+		apiError(w, 500, codedError("create_post_directory_failed", err))
+		return
+	}
+	delim := doc.Delimiter
+	if delim != "+++" {
+		delim = "---"
+	}
+	content := delim + "\n" + strings.TrimSpace(doc.FrontMatter) + "\n" + delim + "\n\n" + doc.Body
+	tmp := path + ".seicho-tmp"
+	if err := os.WriteFile(tmp, []byte(content), 0644); err != nil {
+		apiError(w, 500, codedError("write_post_failed", err))
+		return
+	}
+	if err := os.Rename(tmp, path); err != nil {
+		os.Remove(tmp)
+		apiError(w, 500, codedError("replace_post_failed", err))
+		return
+	}
+	saved, err := os.ReadFile(path)
+	if err != nil {
+		apiError(w, 500, codedError("verify_saved_post_failed", err))
+		return
+	}
+	if !bytes.Equal(saved, []byte(content)) {
+		apiError(w, 500, codedError("saved_content_mismatch", nil))
+		return
+	}
+	if renaming {
+		if err := os.Remove(originalPath); err != nil {
+			os.Remove(path)
+			apiError(w, 500, codedError("remove_original_post_failed", err))
+			return
+		}
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		apiError(w, 500, codedError("read_file_info_failed", err))
+		return
+	}
+	doc.OriginalPath = ""
+	doc.Modified = fileVersion(info)
+	jsonResponse(w, 200, doc)
+}
+
+func (s *server) deletePost(w http.ResponseWriter, r *http.Request, root string) {
+	path, err := safePostPath(root, r.URL.Query().Get("path"))
+	if err != nil {
+		apiError(w, 400, err)
+		return
+	}
+	if err := os.Remove(path); err != nil {
+		status := http.StatusInternalServerError
+		if errors.Is(err, os.ErrNotExist) {
+			status = http.StatusNotFound
+		}
+		apiError(w, status, codedError("delete_post_failed", err))
+		return
+	}
+	w.WriteHeader(204)
+}
+
+func readPostDocument(root, path, readErrorCode string) (postDocument, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return postDocument{}, codedError(readErrorCode, err)
+	}
+	info, err := os.Stat(path)
+	if err != nil {
+		return postDocument{}, codedError("read_file_info_failed", err)
+	}
+	front, body, delim := splitDocument(string(data))
+	rel, _ := filepath.Rel(filepath.Join(root, "content"), path)
+	return postDocument{Path: filepath.ToSlash(rel), FrontMatter: front, Body: body, Delimiter: delim, Modified: fileVersion(info)}, nil
 }
 
 func fileVersion(info os.FileInfo) string {
