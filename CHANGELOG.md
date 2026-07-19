@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.15] - 2026-07-20
+
 ### Added
 
 - Remembered the selected post sort order in the browser and restored it on the next visit.
