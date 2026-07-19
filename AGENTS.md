@@ -32,6 +32,8 @@ When updating the application version:
 - Do this automatically without waiting for an explicit build request.
 - For version-only updates limited to version metadata and the changelog, skip
   syntax checks and tests, but still rebuild and verify the executable version.
-- Check JavaScript with `node --check web/app.js`.
+- Check JavaScript with `node --check web/app.js` and
+  `node --check web/character-count.js`.
+- Run JavaScript unit tests with `node --test tests/character-count.test.js`.
 - Run Go tests with `go test ./...`.
 - Build with `go build -buildvcs=false -o seicho .`.
