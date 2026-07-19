@@ -34,6 +34,9 @@ When updating the application version:
   syntax checks and tests, but still rebuild and verify the executable version.
 - Check JavaScript with `node --check web/app.js` and
   `node --check web/character-count.js`.
+- When adding or changing testable JavaScript behavior, add or update the
+  corresponding unit tests.
+- When practical, include a regression test with JavaScript bug fixes.
 - Run JavaScript unit tests with `node --test tests/character-count.test.js`.
 - Run Go tests with `go test ./...`.
 - Build with `go build -buildvcs=false -o seicho .`.
