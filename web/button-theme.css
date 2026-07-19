@@ -1,6 +1,7 @@
 :root{--button:#607d8b;--button-hover:#526d78;--button-soft:#e8eef0;--button-border:#aebcc2;--button-ink:#405862}
 header{background:#f3f1ec;color:#1d252c;border-bottom:1px solid #ddd9d0}.brand small{color:#66727c}
 aside{background:#f3f1ec}
+.markdown-pane-title{background:var(--button-soft)}
 .primary{background:var(--button);color:#fff}.primary:hover{background:var(--button-hover)}
 .editor-toolbar .toolbar-save{box-shadow:0 3px 8px rgba(82,109,120,.24)}
 .ghost{background:#fff;color:#405862;border-color:#cfccc4}.ghost:hover{background:#f8fafb;border-color:#aebcc2;color:#344c56}
