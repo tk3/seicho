@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Removed
+
+- Removed the redundant heading from the empty editor screen and kept its remaining guidance from wrapping awkwardly.
+
 ## [0.2.16] - 2026-07-20
 
 ### Added
