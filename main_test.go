@@ -44,7 +44,10 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 	if !strings.Contains(recorder.Body.String(), "<title>Seicho</title>") {
 		t.Fatal("editor route did not serve the application shell")
 	}
-	for _, asset := range []string{"/tokens.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
+	if !strings.Contains(recorder.Body.String(), `<img class="mark" src="/favicon.svg" alt="">`) {
+		t.Fatal("application shell does not use the favicon as its header icon")
+	}
+	for _, asset := range []string{"/favicon.svg", "/tokens.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		if !strings.Contains(recorder.Body.String(), asset) {
 			t.Errorf("application shell does not reference %s", asset)
 		}
@@ -52,12 +55,20 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 }
 
 func TestStaticServesRefactoredAssets(t *testing.T) {
-	for _, path := range []string{"/tokens.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
+	for _, path := range []string{"/favicon.svg", "/tokens.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		recorder := httptest.NewRecorder()
 		static(recorder, httptest.NewRequest("GET", path, nil))
 		if recorder.Code != http.StatusOK {
 			t.Errorf("GET %s: status = %d", path, recorder.Code)
 		}
+	}
+}
+
+func TestFaviconUsesApplicationAccentColor(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	static(recorder, httptest.NewRequest(http.MethodGet, "/favicon.svg", nil))
+	if recorder.Code != http.StatusOK || !strings.Contains(recorder.Body.String(), `fill="#da5b3a"`) {
+		t.Fatalf("favicon does not use the application accent color: status=%d body=%s", recorder.Code, recorder.Body.String())
 	}
 }
 

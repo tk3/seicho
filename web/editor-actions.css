@@ -1,4 +1,5 @@
 .meta{grid-template-columns:minmax(0,1fr);align-items:stretch}
 #path{font-size:15px;font-weight:500;letter-spacing:0}
+.mark{object-fit:cover}
 .empty p{white-space:nowrap}
 @media(max-width:600px){.empty p{max-width:calc(100vw - 36px);white-space:normal}}

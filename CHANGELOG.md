@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- Added a red-accented Seicho favicon and reused it as the matching header icon.
+
 ### Removed
 
 - Removed the redundant heading from the empty editor screen and kept its remaining guidance from wrapping awkwardly.
