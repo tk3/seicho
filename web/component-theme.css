@@ -3,6 +3,9 @@ button{border:1px solid transparent;border-radius:6px;padding:7px 12px;font-size
 .primary:hover{background:var(--button-hover)}
 .ghost{border-color:var(--line);background:#f6f8fa;color:#24292f;box-shadow:0 1px 0 rgba(27,31,36,.04)}
 .ghost:hover{border-color:#afb8c1;background:#f3f4f6;color:#24292f}
+#change-site{padding:5px 7px;border-color:transparent;background:transparent;color:var(--muted);box-shadow:none;font-size:var(--font-size-label);font-weight:400}
+#change-site:hover{border-color:transparent;background:var(--button-soft);color:var(--button-ink)}
+#change-site:focus-visible{outline:2px solid var(--button-border);outline-offset:2px}
 .theme-toggle{display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#57606a;font-size:18px;line-height:1}
 .theme-toggle:hover{background:var(--navigation);color:var(--ink)}
 .theme-toggle:focus-visible{outline:2px solid var(--button-border);outline-offset:2px}

@@ -7,6 +7,12 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Changed
+
+- Reordered header actions to show site change, appearance, and tools.
+- Arranged the application name, version, site path, and site-change action together on the left side of the header with clearer spacing between the version and path.
+- Clarified the header hierarchy with a larger application name and a lighter site-change action.
+
 ### Added
 
 - Added persistent light and dark themes with an icon toggle beside the site-change action.

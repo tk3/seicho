@@ -55,8 +55,11 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 	siteIndex := strings.Index(shell, `id="change-site"`)
 	toolsIndex := strings.Index(shell, `id="tools-menu"`)
 	languageIndex := strings.Index(shell, `id="language"`)
-	if themeIndex < 0 || siteIndex < themeIndex || toolsIndex < siteIndex || languageIndex < toolsIndex {
-		t.Fatal("header controls are not ordered as appearance, site change, and tools")
+	if siteIndex < 0 || themeIndex < siteIndex || toolsIndex < themeIndex || languageIndex < toolsIndex {
+		t.Fatal("header controls are not ordered as site change, appearance, and tools")
+	}
+	if !strings.Contains(shell, `<div class="header-primary"><div class="brand">`) || !strings.Contains(shell, `</div><button id="change-site"`) {
+		t.Fatal("site identity and site-change action are not grouped on the left")
 	}
 	if !strings.Contains(shell, `<summary data-i18n-aria="tools" data-i18n-title="tools">…</summary>`) {
 		t.Fatal("tools menu does not use the transparent ellipsis trigger")
