@@ -82,8 +82,9 @@ Trace: enabled
 - Live Markdown preview using Goldmark, the same parser used by Hugo
 - Detect conflicting external file changes before overwriting
 - Prevent file operations outside the site's `content` directory
+- Inspect Git changes and diffs, stage or unstage files, and create commits
 
-Starting a Hugo preview server, uploading images, and performing Git operations are not currently supported.
+Starting a Hugo preview server, uploading images, and performing remote Git operations such as pull and push are not currently supported.
 
 The live preview uses the same Goldmark parser as Hugo. It supports CommonMark, tables, strikethrough, task lists, definition lists, footnotes, and more. Reproducing the final site output—including shortcodes, themes, and render hooks—will require the planned Hugo preview server integration.
 
@@ -92,6 +93,8 @@ The `hugo` command must be available on your `PATH` to create new posts. Seicho 
 ```bash
 hugo new content posts/example.md
 ```
+
+The optional Git panel requires the `git` command on your `PATH`. Git operations are limited to a repository rooted at the selected Hugo site. Seicho uses your existing local Git configuration when creating commits.
 
 ## License
 

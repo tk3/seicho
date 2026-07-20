@@ -7,6 +7,20 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.16] - 2026-07-20
+
+### Added
+
+- Added a Git panel with repository status, branch and change lists, file diffs, staging and unstaging, and commits for the selected Hugo site.
+
+### Fixed
+
+- Fixed an initialization error that prevented the content list from loading after adding the Git panel.
+- Prevented commits without staged changes and now explains that files must be staged first.
+- Made the disabled Git commit button visually distinct and added guidance for enabling it.
+- Made the successful Git commit message disappear automatically after a short delay.
+- Made the header Git button close the Git panel when it is already open.
+
 ## [0.2.15] - 2026-07-20
 
 ### Added

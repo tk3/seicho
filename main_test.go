@@ -44,7 +44,7 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 	if !strings.Contains(recorder.Body.String(), "<title>Seicho</title>") {
 		t.Fatal("editor route did not serve the application shell")
 	}
-	for _, asset := range []string{"/tokens.css", "/router.js", "/i18n.js", "/editor-view.js"} {
+	for _, asset := range []string{"/tokens.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		if !strings.Contains(recorder.Body.String(), asset) {
 			t.Errorf("application shell does not reference %s", asset)
 		}
@@ -52,7 +52,7 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 }
 
 func TestStaticServesRefactoredAssets(t *testing.T) {
-	for _, path := range []string{"/tokens.css", "/router.js", "/i18n.js", "/editor-view.js"} {
+	for _, path := range []string{"/tokens.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		recorder := httptest.NewRecorder()
 		static(recorder, httptest.NewRequest("GET", path, nil))
 		if recorder.Code != http.StatusOK {

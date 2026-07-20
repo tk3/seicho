@@ -1,0 +1,22 @@
+.git-panel{position:fixed;top:72px;right:0;bottom:0;z-index:4;width:min(480px,100vw);padding:22px;background:#fff;border-left:1px solid var(--line);box-shadow:-16px 0 40px rgba(29,37,44,.14);overflow:auto}
+.git-panel-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.git-panel-header h2{margin:5px 0 0}
+.git-repository-state{color:var(--muted);font-size:13px}
+.git-branch{display:inline-block;margin:10px 0 15px;padding:5px 9px;border-radius:5px;background:var(--navigation);color:var(--button-ink);font-family:var(--font-mono);font-size:12px}
+.git-panel h3{margin:18px 0 9px;font-size:11px;letter-spacing:.12em;color:var(--muted)}
+.git-changes{display:flex;flex-direction:column;gap:5px}
+.git-change{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;padding:9px;border:1px solid var(--line);border-radius:7px}
+.git-change-main{min-width:0;display:flex;align-items:center;gap:8px;border:0;padding:0;background:transparent;text-align:left}
+.git-change-status{flex:none;color:var(--button-ink);font-family:var(--font-mono);font-size:11px}
+.git-change-path{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-mono);font-size:12px}
+.git-change-actions{display:flex;gap:5px}
+.git-change-actions button{padding:6px 8px;background:var(--button-soft);color:var(--button-ink);font-size:11px}
+.git-diff{min-height:90px;max-height:280px;margin:0;padding:12px;border:1px solid var(--line);border-radius:7px;background:#f8fafb;color:var(--ink);font-family:var(--font-mono);font-size:11px;line-height:1.55;overflow:auto;white-space:pre}
+.git-commit{display:flex;flex-direction:column;gap:9px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.git-commit textarea{resize:vertical}
+.git-commit .primary{align-self:flex-end}
+.git-commit .primary:disabled{border-color:#c9ced1;background:#dfe3e5;color:#7b858a;box-shadow:none;cursor:not-allowed;opacity:1}
+.git-commit-hint{margin:-3px 0 0;color:var(--muted);font-size:12px;text-align:right}
+.git-empty{padding:14px;border:1px dashed var(--line);border-radius:7px;color:var(--muted);font-size:13px;text-align:center}
+#git-feedback{color:var(--button-ink)}
+@media(max-width:600px){.git-panel{top:72px;padding:18px}.actions{gap:7px}.language-control span{display:none}}

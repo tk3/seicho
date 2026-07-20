@@ -33,7 +33,7 @@ var webFiles embed.FS
 
 // version can be replaced at build time with:
 // go build -ldflags "-X main.version=1.0.0" .
-var version = "0.2.15"
+var version = "0.2.16"
 
 type server struct {
 	mu       sync.RWMutex
@@ -101,6 +101,10 @@ func main() {
 	mux.HandleFunc("/api/posts", s.posts)
 	mux.HandleFunc("/api/post", s.post)
 	mux.HandleFunc("/api/preview", s.preview)
+	mux.HandleFunc("/api/git/status", s.gitStatus)
+	mux.HandleFunc("/api/git/diff", s.gitDiff)
+	mux.HandleFunc("/api/git/stage", s.gitStage)
+	mux.HandleFunc("/api/git/commit", s.gitCommit)
 	mux.HandleFunc("/", static)
 	ln, err := net.Listen("tcp", listenAddress)
 	if err != nil {
@@ -704,6 +708,16 @@ var apiErrorMessages = map[string]localizedMessages{
 	"invalid_post_path":               {"投稿パスが不正です。", "The post path is invalid."},
 	"invalid_post_extension":          {"拡張子は .md または .markdown にしてください。", "Use the .md or .markdown file extension."},
 	"path_outside_content":            {"contentフォルダー外は操作できません。", "Files outside the content folder cannot be accessed."},
+	"git_not_installed":               {"gitコマンドが見つかりません。", "The git command could not be found."},
+	"git_repository_not_found":        {"選択したHugoサイトはGitリポジトリではありません。", "The selected Hugo site is not a Git repository."},
+	"git_status_failed":               {"Gitの状態を取得できません。", "Could not read the Git status."},
+	"git_diff_failed":                 {"Gitの差分を取得できません。", "Could not read the Git diff."},
+	"git_stage_failed":                {"ファイルをステージできません。", "Could not stage the file."},
+	"git_unstage_failed":              {"ファイルのステージを解除できません。", "Could not unstage the file."},
+	"git_commit_message_required":     {"コミットメッセージを入力してください。", "Enter a commit message."},
+	"git_nothing_staged":              {"コミットする変更をステージしてください。", "Stage at least one change before committing."},
+	"git_commit_failed":               {"コミットできません。", "Could not create the commit."},
+	"git_invalid_path":                {"Gitで操作するファイルパスが不正です。", "The file path for the Git operation is invalid."},
 	"method_not_allowed":              {"許可されていない操作です。", "This operation is not allowed."},
 }
 
