@@ -1,6 +1,0 @@
-.markdown-pane-title{background:var(--editor-heading)}
-.primary{background:var(--button);color:#fff}.primary:hover{background:var(--button-hover)}
-.editor-toolbar .toolbar-save{box-shadow:0 3px 8px rgba(82,109,120,.24)}
-.ghost{background:#fff;color:#405862;border-color:#cfccc4}.ghost:hover{background:#f8fafb;border-color:#aebcc2;color:#344c56}
-.dialog-actions .discard-action{background:transparent;color:#9a4937;border:1px solid transparent}.dialog-actions .discard-action:hover{background:#fff1ed;color:#9a4937;border-color:#eed3ca}
-.language-control{flex-direction:row;align-items:center;gap:7px;letter-spacing:0;color:#66727c}.language-control select{padding:7px 9px;border:1px solid #cfccc4;border-radius:6px;background:#fff;color:#405862;font-weight:700}

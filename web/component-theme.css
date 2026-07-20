@@ -1,27 +1,56 @@
-button{border:1px solid transparent;border-radius:6px;padding:7px 12px;font-size:13px;line-height:20px}
-.primary{border-color:rgba(27,31,36,.15);background:var(--button);box-shadow:0 1px 0 rgba(27,31,36,.1)}
+button{border:1px solid transparent;border-radius:6px;padding:7px 12px;font-size:var(--font-size-compact);line-height:20px}
+.primary{border-color:rgba(27,31,36,.15);background:var(--button);color:#fff;box-shadow:0 1px 0 rgba(27,31,36,.1)}
 .primary:hover{background:var(--button-hover)}
 .ghost{border-color:var(--line);background:#f6f8fa;color:#24292f;box-shadow:0 1px 0 rgba(27,31,36,.04)}
 .ghost:hover{border-color:#afb8c1;background:#f3f4f6;color:#24292f}
-.language-control select{padding:6px 8px;border-color:var(--line);border-radius:6px;background:#fff;color:#24292f}
-.editor-toolbar .toolbar-save,.editor-toolbar .zen-toggle{min-width:96px;padding:6px 11px}
-.editor-toolbar .toolbar-delete{padding:6px 11px}
-label{gap:6px;color:#57606a;font-size:11px;letter-spacing:.04em}
-input,textarea{border-color:var(--line);border-radius:6px;padding:8px 10px;background:#fff}
+label{gap:6px;color:#57606a;font-size:var(--font-size-label);letter-spacing:.04em}
+input,textarea,select{border-color:var(--line);border-radius:6px;background:#fff;color:var(--ink);font-family:inherit;font-size:var(--font-size-control)}
+input,textarea{padding:8px 10px}
 input:focus,textarea:focus,select:focus{border-color:#0969da;outline:2px solid rgba(9,105,218,.18);outline-offset:-1px}
+#path{font-size:var(--font-size-control);font-weight:500;letter-spacing:0}
+#front{font-family:var(--font-mono);font-size:var(--font-size-compact);resize:vertical}
+.editor-toolbar .toolbar-save,.editor-toolbar .zen-toggle{min-width:96px;padding:6px 11px}
+.editor-toolbar .toolbar-save{box-shadow:0 1px 0 rgba(27,31,36,.1)}
+.editor-toolbar .zen-toggle{background:transparent;border-color:var(--button-border);color:var(--button-ink)}
+.editor-toolbar .zen-toggle:hover{background:var(--button-soft)}
+kbd{font-size:var(--font-size-micro)}
 .modal{background:rgba(31,35,40,.48);backdrop-filter:blur(2px)}
-.dialog{padding:28px;border:1px solid var(--line);border-radius:8px;box-shadow:0 16px 40px rgba(31,35,40,.2)}
-.dialog h1{margin:6px 0 8px;font-size:22px}.dialog p{margin:0 0 18px}
-.dialog-actions{gap:8px}.dialog-actions .secondary{border-color:var(--line);background:#f6f8fa}
-.modal-close{top:10px;right:10px;width:32px;height:32px;border:0;border-radius:6px}
-.tools-menu summary{color:#57606a}.tools-menu summary:hover,.tools-menu[open] summary{color:#24292f}
-.tools-menu-list{top:calc(100% + 5px);border-color:var(--line);border-radius:6px;box-shadow:0 8px 24px rgba(140,149,159,.25)}
+.dialog{position:relative;padding:28px;border:1px solid var(--line);border-radius:8px;box-shadow:0 16px 40px rgba(31,35,40,.2)}
+.dialog h1{margin:6px 0 8px;font-size:var(--font-size-title)}
+.dialog p{margin:0 0 18px}
+.new-post-dialog,.discard-dialog{width:min(560px,90vw)}
+.delete-post-dialog{width:min(540px,90vw)}
+.new-post-dialog input{font-size:var(--font-size-control);font-weight:500}
+.dialog-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+.dialog-actions .secondary{border-color:var(--line);background:#f6f8fa;color:var(--ink)}
+.dialog-actions .secondary:hover{background:#eaeef2}
+.modal-close{position:absolute;top:10px;right:10px;width:32px;height:32px;padding:0;border:0;border-radius:6px;background:transparent;color:var(--muted);font-size:25px;font-weight:400;line-height:1}
+.modal-close:hover{background:#f0f2f4;color:var(--ink)}
+.danger-eyebrow{color:#b7442c}
+.warning-eyebrow{color:#a26624}
+.delete-target{margin:18px 0;padding:12px 14px;border:1px solid #ecd3cb;border-radius:6px;background:#fff5f2;color:#813d2d;font-family:var(--font-mono);font-size:var(--font-size-control);overflow-wrap:anywhere}
+.dialog-actions .destructive{background:#b7442c;color:#fff;border-color:#a43b26}
+.dialog-actions .destructive:hover{background:#9e3825}
+.dialog-actions .discard-action{background:transparent;color:#9a4937;border-color:transparent}
+.dialog-actions .discard-action:hover{background:#fff1ed;color:#9a4937;border-color:#eed3ca}
+.tools-menu summary,.post-actions-menu summary{display:grid;place-items:center;min-width:32px;padding:6px;border:0;background:transparent;color:#57606a;list-style:none;cursor:pointer;font-size:20px;line-height:1}
+.tools-menu summary::-webkit-details-marker,.post-actions-menu summary::-webkit-details-marker{display:none}
+.tools-menu summary:hover,.tools-menu[open] summary,.post-actions-menu summary:hover,.post-actions-menu[open] summary{color:#24292f}
+.tools-menu summary:focus-visible,.post-actions-menu summary:focus-visible{outline:2px solid var(--button-border);outline-offset:2px;border-radius:4px}
+.tools-menu-list,.post-actions-list{top:calc(100% + 5px);border-color:var(--line);border-radius:6px;background:#fff;box-shadow:0 8px 24px rgba(140,149,159,.25)}
 .tools-menu-list button{border:0;border-radius:4px}
-.tools-language{margin:3px 5px 7px;padding-bottom:9px;border-bottom:1px solid var(--line)}.tools-language select{padding:6px 8px;border-color:var(--line);border-radius:6px;background:#fff;color:#24292f}
-.post-actions-menu{position:relative}.post-actions-menu summary{display:grid;place-items:center;min-width:32px;padding:6px;border:0;background:transparent;color:#57606a;list-style:none;cursor:pointer;font-size:20px;line-height:1}.post-actions-menu summary::-webkit-details-marker{display:none}.post-actions-menu summary:hover,.post-actions-menu[open] summary{color:#24292f}.post-actions-menu summary:focus-visible{outline:2px solid var(--button-border);outline-offset:2px;border-radius:4px}.post-actions-list{position:absolute;top:calc(100% + 5px);right:0;z-index:6;width:160px;padding:6px;border:1px solid var(--line);border-radius:6px;background:#fff;box-shadow:0 8px 24px rgba(140,149,159,.25)}.post-actions-list .danger{width:100%;margin:0;border:0;background:transparent;text-align:left}.post-actions-list .danger:hover{background:#fff1ed}
-body.zen-mode .post-actions-menu{display:none}
+.tools-language{margin:3px 5px 7px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+.tools-language select{padding:6px 8px}
+.post-actions-menu{position:relative}
+.post-actions-list{position:absolute;right:0;z-index:6;width:160px;padding:6px;border-style:solid;border-width:1px}
+.post-actions-list .danger{width:100%;margin:0;border:0;background:transparent;text-align:left}
+.post-actions-list .danger:hover{background:#fff1ed}
 .git-panel{top:64px;padding:20px;border-left-color:var(--line);box-shadow:-8px 0 24px rgba(140,149,159,.2)}
-.git-change{border-color:var(--line);border-radius:6px}.git-change:hover{background:#f6f8fa}
+.git-change{border-color:var(--line);border-radius:6px}
+.git-change:hover{background:#f6f8fa}
 .git-diff{border-color:var(--line);border-radius:6px;background:#f6f8fa}
 .git-branch{background:#ddf4ff;color:#0550ae}
-@media(max-width:600px){.git-panel{top:64px}}
+.git-repository-state,.git-empty{font-size:var(--font-size-compact)}
+.git-change-path,.git-branch,.git-commit-hint{font-size:var(--font-size-label)}
+.git-panel h3,.git-change-status,.git-change-actions button,.git-diff{font-size:11px}
+@media(max-width:600px){.git-panel{top:64px}.editor-toolbar .toolbar-save{min-width:auto}}
