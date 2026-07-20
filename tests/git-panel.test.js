@@ -1,6 +1,6 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {gitBadge,preferredDiffStaged,hasStagedChanges,nextGitPanelOpenState}=require('../web/git-panel.js');
+const {gitBadge,preferredDiffStaged,hasStagedChanges,nextGitPanelOpenState,closeToolsMenu}=require('../web/git-panel.js');
 
 test('shows a Git badge only when a repository has changes',()=>{
  assert.equal(gitBadge({repository:true,changes:[{},{}]}),' ● 2');
@@ -23,4 +23,10 @@ test('enables commits only when at least one change is staged',()=>{
 test('toggles the Git panel from its current visibility',()=>{
  assert.equal(nextGitPanelOpenState(true),true);
  assert.equal(nextGitPanelOpenState(false),false);
+});
+
+test('closes the tools menu after choosing Git',()=>{
+ const menu={open:true};
+ closeToolsMenu(menu);
+ assert.equal(menu.open,false);
 });

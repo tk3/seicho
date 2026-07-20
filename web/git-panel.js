@@ -3,8 +3,9 @@ function gitBadge(status){return status?.repository&&status.changes.length?' ●
 function preferredDiffStaged(change){return !change.unstaged&&change.staged}
 function hasStagedChanges(status){return Boolean(status?.changes?.some(change=>change.staged))}
 function nextGitPanelOpenState(panelIsHidden){return panelIsHidden}
+function closeToolsMenu(menu){if(menu)menu.open=false}
 function createGitPanel(options){
- const elements={panel:document.querySelector('#git-panel'),toggle:document.querySelector('#git-toggle'),count:document.querySelector('#git-count'),close:document.querySelector('#git-close'),state:document.querySelector('#git-repository-state'),branch:document.querySelector('#git-branch'),content:document.querySelector('#git-content'),changes:document.querySelector('#git-changes'),diff:document.querySelector('#git-diff'),error:document.querySelector('#git-error'),feedback:document.querySelector('#git-feedback'),message:document.querySelector('#git-commit-message'),commit:document.querySelector('#git-commit'),commitHint:document.querySelector('#git-commit-hint')};
+ const elements={panel:document.querySelector('#git-panel'),toggle:document.querySelector('#git-toggle'),toolsMenu:document.querySelector('#tools-menu'),count:document.querySelector('#git-count'),close:document.querySelector('#git-close'),state:document.querySelector('#git-repository-state'),branch:document.querySelector('#git-branch'),content:document.querySelector('#git-content'),changes:document.querySelector('#git-changes'),diff:document.querySelector('#git-diff'),error:document.querySelector('#git-error'),feedback:document.querySelector('#git-feedback'),message:document.querySelector('#git-commit-message'),commit:document.querySelector('#git-commit'),commitHint:document.querySelector('#git-commit-hint')};
  let status={repository:false,branch:'',changes:[]};
  let feedbackTimer=0;
  const t=key=>options.translate(options.getLocale(),key);
@@ -55,12 +56,13 @@ function createGitPanel(options){
   try{setError();setFeedback();await options.api('/api/git/commit',{method:'POST',body:JSON.stringify({message})});elements.message.value='';elements.diff.textContent='';setFeedback(t('gitCommitted'),true);await refresh()}
   catch(error){setError(error.message)}
  }
- elements.toggle.onclick=()=>setOpen(nextGitPanelOpenState(elements.panel.classList.contains('hidden')));elements.close.onclick=()=>setOpen(false);elements.commit.onclick=commit;
- document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!elements.panel.classList.contains('hidden'))setOpen(false)});
+ elements.toggle.onclick=()=>{closeToolsMenu(elements.toolsMenu);setOpen(nextGitPanelOpenState(elements.panel.classList.contains('hidden')))};elements.close.onclick=()=>setOpen(false);elements.commit.onclick=commit;
+ document.addEventListener('click',event=>{if(elements.toolsMenu.open&&!elements.toolsMenu.contains(event.target))closeToolsMenu(elements.toolsMenu)});
+ document.addEventListener('keydown',event=>{if(event.key!=='Escape')return;if(elements.toolsMenu.open){closeToolsMenu(elements.toolsMenu);return}if(!elements.panel.classList.contains('hidden'))setOpen(false)});
  render();
  return {refresh,render,open:()=>setOpen(true),close:()=>setOpen(false)};
 }
-const api={gitBadge,preferredDiffStaged,hasStagedChanges,nextGitPanelOpenState,createGitPanel};
+const api={gitBadge,preferredDiffStaged,hasStagedChanges,nextGitPanelOpenState,closeToolsMenu,createGitPanel};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else Object.assign(root,api);
 })(typeof globalThis==='object'?globalThis:this);

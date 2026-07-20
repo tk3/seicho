@@ -50,6 +50,13 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 	if !strings.Contains(recorder.Body.String(), `placeholder="/path/to/hugo-site"`) {
 		t.Fatal("site path placeholder is not platform-neutral")
 	}
+	shell := recorder.Body.String()
+	languageIndex := strings.Index(shell, `id="language"`)
+	siteIndex := strings.Index(shell, `id="change-site"`)
+	toolsIndex := strings.Index(shell, `id="tools-menu"`)
+	if languageIndex < 0 || siteIndex < languageIndex || toolsIndex < siteIndex {
+		t.Fatal("header controls are not ordered as language, site change, and tools")
+	}
 	for _, asset := range []string{"/favicon.svg", "/tokens.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		if !strings.Contains(recorder.Body.String(), asset) {
 			t.Errorf("application shell does not reference %s", asset)

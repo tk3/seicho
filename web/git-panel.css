@@ -1,4 +1,5 @@
 .git-panel{position:fixed;top:72px;right:0;bottom:0;z-index:4;width:min(480px,100vw);padding:22px;background:#fff;border-left:1px solid var(--line);box-shadow:-16px 0 40px rgba(29,37,44,.14);overflow:auto}
+.tools-menu{position:relative}.tools-menu summary{display:grid;place-items:center;min-width:40px;padding:8px 12px;list-style:none;cursor:pointer;font-size:18px;line-height:1}.tools-menu summary::-webkit-details-marker{display:none}.tools-menu-list{position:absolute;top:calc(100% + 7px);right:0;z-index:6;width:180px;padding:6px;border:1px solid var(--line);border-radius:7px;background:#fff;box-shadow:0 12px 28px rgba(29,37,44,.16)}.tools-menu-list button{display:flex;width:100%;align-items:center;justify-content:space-between;padding:9px 11px;background:transparent;color:var(--ink);text-align:left}.tools-menu-list button:hover{background:var(--button-soft)}
 .git-panel-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
 .git-panel-header h2{margin:5px 0 0}
 .git-repository-state{color:var(--muted);font-size:13px}

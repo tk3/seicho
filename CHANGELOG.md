@@ -9,6 +9,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- Moved Git into a subdued tools menu after the language and site controls.
 - Made the Hugo site path placeholder platform-neutral.
 
 ### Added
