@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Changed
+
+- Refreshed the interface with a compact GitHub Primer-inspired layout and clearer article selection states.
+
 ## [0.2.17] - 2026-07-20
 
 ### Changed
