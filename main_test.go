@@ -81,6 +81,24 @@ func TestStaticServesRefactoredAssets(t *testing.T) {
 	}
 }
 
+func TestButtonSizesUseSharedTokens(t *testing.T) {
+	tokens := httptest.NewRecorder()
+	static(tokens, httptest.NewRequest(http.MethodGet, "/tokens.css", nil))
+	for _, declaration := range []string{"--button-height:36px", "--button-height-compact:34px", "--button-height-icon:34px"} {
+		if !strings.Contains(tokens.Body.String(), declaration) {
+			t.Errorf("tokens.css does not define %s", declaration)
+		}
+	}
+
+	components := httptest.NewRecorder()
+	static(components, httptest.NewRequest(http.MethodGet, "/component-theme.css", nil))
+	for _, class := range []string{".button-compact", ".button-icon"} {
+		if !strings.Contains(components.Body.String(), class) {
+			t.Errorf("component-theme.css does not define %s", class)
+		}
+	}
+}
+
 func TestFaviconUsesApplicationAccentColor(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	static(recorder, httptest.NewRequest(http.MethodGet, "/favicon.svg", nil))

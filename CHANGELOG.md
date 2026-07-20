@@ -7,11 +7,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
-### Changed
-
-- Reordered header actions to show site change, appearance, and tools.
-- Arranged the application name, version, site path, and site-change action together on the left side of the header with clearer spacing between the version and path.
-- Clarified the header hierarchy with a larger application name and a lighter site-change action.
+## [0.2.18] - 2026-07-20
 
 ### Added
 
@@ -19,6 +15,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ### Changed
 
+- Standardized buttons into shared standard, compact, and icon size systems.
+- Reordered header actions to show site change, appearance, and tools.
+- Arranged the application name, version, site path, and site-change action together on the left side of the header with clearer spacing between the version and path.
+- Clarified the header hierarchy with a larger application name and a lighter site-change action.
 - Refreshed the interface with a compact GitHub Primer-inspired layout and clearer article selection states.
 - Unified buttons, form controls, dialogs, menus, and Git panels with compact Fluent-inspired component styling.
 - Reorganized global controls with an explicit site-change action, language and Git inside the tools menu, and search and sort together in the Contents sidebar.
