@@ -57,6 +57,9 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 	if languageIndex < 0 || siteIndex < languageIndex || toolsIndex < siteIndex {
 		t.Fatal("header controls are not ordered as language, site change, and tools")
 	}
+	if !strings.Contains(shell, `<summary data-i18n-aria="tools" data-i18n-title="tools">…</summary>`) {
+		t.Fatal("tools menu does not use the transparent ellipsis trigger")
+	}
 	for _, asset := range []string{"/favicon.svg", "/tokens.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		if !strings.Contains(recorder.Body.String(), asset) {
 			t.Errorf("application shell does not reference %s", asset)
