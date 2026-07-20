@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.17] - 2026-07-20
+
 ### Changed
 
 - Moved Git into a subdued tools menu after the language and site controls.
