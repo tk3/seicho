@@ -60,7 +60,7 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 	if !strings.Contains(shell, `<summary data-i18n-aria="tools" data-i18n-title="tools">…</summary>`) {
 		t.Fatal("tools menu does not use the transparent ellipsis trigger")
 	}
-	for _, asset := range []string{"/favicon.svg", "/tokens.css", "/interface-theme.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
+	for _, asset := range []string{"/favicon.svg", "/tokens.css", "/interface-theme.css", "/component-theme.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		if !strings.Contains(recorder.Body.String(), asset) {
 			t.Errorf("application shell does not reference %s", asset)
 		}
@@ -68,7 +68,7 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 }
 
 func TestStaticServesRefactoredAssets(t *testing.T) {
-	for _, path := range []string{"/favicon.svg", "/tokens.css", "/interface-theme.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
+	for _, path := range []string{"/favicon.svg", "/tokens.css", "/interface-theme.css", "/component-theme.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		recorder := httptest.NewRecorder()
 		static(recorder, httptest.NewRequest("GET", path, nil))
 		if recorder.Code != http.StatusOK {
