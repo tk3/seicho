@@ -32,8 +32,10 @@ Use these rules for every user-visible interface change in Seicho.
 ## Typography and color
 
 - Use the font-size variables in `web/tokens.css` according to the content role.
+- Use the shared monospace font for multiline text editing, with font size selected according to the editor's content role.
 - Prefer weight and color changes over arbitrary font-size changes when adjusting visual emphasis.
 - Use theme variables instead of fixed colors when a value should change between light and dark appearances.
+- Render all placeholder text with the shared placeholder color, regular font weight, and normal letter spacing so its emphasis remains consistent; inherit font family and size from the field's content role.
 - Check both light and dark themes after changing a shared component.
 
 ## Layout and responsive behavior

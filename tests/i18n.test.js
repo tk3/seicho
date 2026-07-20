@@ -9,5 +9,7 @@ test('keeps Japanese and English translation keys aligned',()=>{
 test('returns localized messages and falls back to the key',()=>{
  assert.equal(translate('ja','save'),'保存');
  assert.equal(translate('en','save'),'Save');
+ assert.equal(translate('ja','startWriting'),'本文を書こう');
+ assert.equal(translate('en','startWriting'),'Start writing');
  assert.equal(translate('en','missingKey'),'missingKey');
 });

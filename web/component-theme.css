@@ -18,9 +18,12 @@ button:disabled{cursor:not-allowed;opacity:.6}
 label{gap:6px;color:#57606a;font-size:var(--font-size-label);letter-spacing:.04em}
 input,textarea,select{border-color:var(--line);border-radius:6px;background:#fff;color:var(--ink);font-family:inherit;font-size:var(--font-size-control)}
 input,textarea{padding:8px 10px}
+input::placeholder,textarea::placeholder{color:var(--placeholder);font-weight:400;letter-spacing:normal;opacity:1}
+textarea{font-family:var(--font-mono)}
 input:focus,textarea:focus,select:focus{border-color:#0969da;outline:2px solid rgba(9,105,218,.18);outline-offset:-1px}
 #path{font-size:var(--font-size-control);font-weight:500;letter-spacing:0}
-#front{font-family:var(--font-mono);font-size:var(--font-size-compact);resize:vertical}
+#front,#git-commit-message{font-size:var(--font-size-compact)}
+#front{resize:vertical}
 .editor-toolbar .toolbar-save,.editor-toolbar .zen-toggle{min-width:96px}
 .editor-toolbar .toolbar-save{box-shadow:0 1px 0 rgba(27,31,36,.1)}
 .editor-toolbar .zen-toggle{background:transparent;border-color:var(--button-border);color:var(--button-ink)}

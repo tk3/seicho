@@ -1,6 +1,7 @@
 html[data-theme="dark"]{
  --ink:#f0f3f6;
  --muted:#8c959f;
+ --placeholder:#6e7681;
  --paper:#0d1117;
  --panel:#161b22;
  --line:#30363d;
