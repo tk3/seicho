@@ -5,6 +5,8 @@ en:{language:'Language',closeDialog:'Close dialog',close:'Close',openHugoSite:'O
 };
 messages.ja.gitNothingStaged='コミットする変更をステージしてください';
 messages.en.gitNothingStaged='Stage at least one change before committing';
+messages.ja.creatingPost='作成中…';
+messages.en.creatingPost='Creating…';
 messages.ja.gitCommitHint='変更をステージするとコミットできます';
 messages.en.gitCommitHint='Stage a change to enable commits';
 messages.ja.tools='ツール';

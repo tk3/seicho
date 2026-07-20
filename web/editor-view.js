@@ -9,7 +9,8 @@ function setEditorVisible(editor,empty,visible){
  empty.classList.toggle('hidden',visible);
 }
 function setDialogVisible(dialog,visible){dialog.classList.toggle('hidden',!visible)}
-const api={populatePostFields,setEditorVisible,setDialogVisible};
+function setControlsDisabled(controls,disabled){controls.forEach(control=>{control.disabled=disabled})}
+const api={populatePostFields,setEditorVisible,setDialogVisible,setControlsDisabled};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else Object.assign(root,api);
 })(typeof globalThis==='object'?globalThis:this);

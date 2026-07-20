@@ -1,8 +1,12 @@
 button{height:var(--button-height);padding:0 var(--button-padding-inline);border:1px solid transparent;border-radius:6px;font-size:var(--font-size-compact);font-weight:700;line-height:20px}
+button:disabled{cursor:not-allowed;opacity:.6}
 .button-compact,#change-site,.editor-toolbar .toolbar-save,.editor-toolbar .zen-toggle,.git-change-actions button{height:var(--button-height-compact);padding-inline:var(--button-padding-inline-compact)}
 .button-icon,.theme-toggle,.modal-close,.tools-menu summary,.post-actions-menu summary,.aside-title button{display:grid;width:var(--button-height-icon);height:var(--button-height-icon);place-items:center;padding:0}
 .primary{border-color:rgba(27,31,36,.15);background:var(--button);color:#fff;box-shadow:0 1px 0 rgba(27,31,36,.1)}
 .primary:hover{background:var(--button-hover)}
+.primary.is-loading{display:inline-flex;align-items:center;justify-content:center;gap:7px;cursor:wait;opacity:1}
+.primary.is-loading::before{width:13px;height:13px;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;content:"";animation:button-spin .7s linear infinite}
+@keyframes button-spin{to{transform:rotate(360deg)}}
 .ghost{border-color:var(--line);background:#f6f8fa;color:#24292f;box-shadow:0 1px 0 rgba(27,31,36,.04)}
 .ghost:hover{border-color:#afb8c1;background:#f3f4f6;color:#24292f}
 #change-site{border-color:transparent;background:transparent;color:var(--muted);box-shadow:none;font-size:var(--font-size-label);font-weight:400}

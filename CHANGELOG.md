@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- Added delayed loading feedback and duplicate-submission protection while creating a post.
+
 ## [0.2.18] - 2026-07-20
 
 ### Added

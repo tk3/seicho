@@ -1,6 +1,6 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {populatePostFields,setEditorVisible,setDialogVisible}=require('../web/editor-view.js');
+const {populatePostFields,setEditorVisible,setDialogVisible,setControlsDisabled}=require('../web/editor-view.js');
 
 function classList(){
  const classes=new Set(['hidden']);
@@ -29,4 +29,12 @@ test('opens and closes dialogs',()=>{
  assert.equal(dialog.classList.contains('hidden'),false);
  setDialogVisible(dialog,false);
  assert.equal(dialog.classList.contains('hidden'),true);
+});
+
+test('disables and restores controls during form submission',()=>{
+ const controls=[{disabled:false},{disabled:false},{disabled:false}];
+ setControlsDisabled(controls,true);
+ assert.deepEqual(controls.map(control=>control.disabled),[true,true,true]);
+ setControlsDisabled(controls,false);
+ assert.deepEqual(controls.map(control=>control.disabled),[false,false,false]);
 });
