@@ -51,11 +51,11 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 		t.Fatal("site path placeholder is not platform-neutral")
 	}
 	shell := recorder.Body.String()
-	languageIndex := strings.Index(shell, `id="language"`)
 	siteIndex := strings.Index(shell, `id="change-site"`)
 	toolsIndex := strings.Index(shell, `id="tools-menu"`)
-	if languageIndex < 0 || siteIndex < languageIndex || toolsIndex < siteIndex {
-		t.Fatal("header controls are not ordered as language, site change, and tools")
+	languageIndex := strings.Index(shell, `id="language"`)
+	if siteIndex < 0 || toolsIndex < siteIndex || languageIndex < toolsIndex {
+		t.Fatal("header controls are not ordered as site change followed by the tools menu")
 	}
 	if !strings.Contains(shell, `<summary data-i18n-aria="tools" data-i18n-title="tools">…</summary>`) {
 		t.Fatal("tools menu does not use the transparent ellipsis trigger")

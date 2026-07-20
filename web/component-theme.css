@@ -17,6 +17,7 @@ input:focus,textarea:focus,select:focus{border-color:#0969da;outline:2px solid r
 .tools-menu summary{color:#57606a}.tools-menu summary:hover,.tools-menu[open] summary{color:#24292f}
 .tools-menu-list{top:calc(100% + 5px);border-color:var(--line);border-radius:6px;box-shadow:0 8px 24px rgba(140,149,159,.25)}
 .tools-menu-list button{border:0;border-radius:4px}
+.tools-language{margin:3px 5px 7px;padding-bottom:9px;border-bottom:1px solid var(--line)}.tools-language select{padding:6px 8px;border-color:var(--line);border-radius:6px;background:#fff;color:#24292f}
 .git-panel{top:64px;padding:20px;border-left-color:var(--line);box-shadow:-8px 0 24px rgba(140,149,159,.2)}
 .git-change{border-color:var(--line);border-radius:6px}.git-change:hover{background:#f6f8fa}
 .git-diff{border-color:var(--line);border-radius:6px;background:#f6f8fa}
