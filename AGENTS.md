@@ -1,5 +1,9 @@
 # Development instructions
 
+## UI changes
+
+- Before changing the user interface, read and follow `docs/UI_GUIDELINES.md`.
+
 ## Changelog
 
 - Record every user-visible change in `CHANGELOG.md` under `Unreleased`.
