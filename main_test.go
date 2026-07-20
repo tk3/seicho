@@ -47,6 +47,9 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 	if !strings.Contains(recorder.Body.String(), `<img class="mark" src="/favicon.svg" alt="">`) {
 		t.Fatal("application shell does not use the favicon as its header icon")
 	}
+	if !strings.Contains(recorder.Body.String(), `placeholder="/path/to/hugo-site"`) {
+		t.Fatal("site path placeholder is not platform-neutral")
+	}
 	for _, asset := range []string{"/favicon.svg", "/tokens.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		if !strings.Contains(recorder.Body.String(), asset) {
 			t.Errorf("application shell does not reference %s", asset)
