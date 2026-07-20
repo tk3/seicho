@@ -195,6 +195,48 @@ func TestSafePostPath(t *testing.T) {
 	}
 }
 
+func TestCreatePostRejectsUnsafePaths(t *testing.T) {
+	root := t.TempDir()
+	if err := os.MkdirAll(filepath.Join(root, "content"), 0755); err != nil {
+		t.Fatal(err)
+	}
+	s := &server{root: root}
+	absPath := filepath.Join(t.TempDir(), "absolute.md")
+	tests := []struct {
+		name string
+		path string
+		code string
+	}{
+		{"parent traversal", "../outside.md", "invalid_post_path"},
+		{"nested traversal", "posts/../../outside.md", "invalid_post_path"},
+		{"absolute path", absPath, "invalid_post_path"},
+		{"invalid extension", "posts/outside.txt", "invalid_post_extension"},
+		{"empty path", "", "invalid_post_path"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			payload, err := json.Marshal(map[string]string{"path": tt.path})
+			if err != nil {
+				t.Fatal(err)
+			}
+			recorder := httptest.NewRecorder()
+			s.post(recorder, httptest.NewRequest(http.MethodPost, "/api/post", bytes.NewReader(payload)))
+			if recorder.Code != http.StatusBadRequest {
+				t.Fatalf("status = %d, body = %s", recorder.Code, recorder.Body.String())
+			}
+			if !strings.Contains(recorder.Body.String(), `"code":"`+tt.code+`"`) {
+				t.Fatalf("expected error code %q, body = %s", tt.code, recorder.Body.String())
+			}
+		})
+	}
+	if _, err := os.Stat(filepath.Join(root, "..", "outside.md")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("path traversal created a file outside content: %v", err)
+	}
+	if _, err := os.Stat(absPath); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("absolute path created a file: %v", err)
+	}
+}
+
 func TestSetRoot(t *testing.T) {
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "hugo.toml"), []byte("baseURL='/'"), 0644); err != nil {
