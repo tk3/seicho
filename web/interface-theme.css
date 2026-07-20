@@ -27,7 +27,7 @@ aside{padding:16px 12px;background:var(--navigation);border-right:1px solid var(
 .post strong{color:#24292f;font-size:13px}.post small{font-size:11px}
 .editor{background:#fff}
 .editor-toolbar{min-height:56px;padding:8px 16px;background:rgba(255,255,255,.96);border-bottom-color:var(--line);box-shadow:none}
-.editor-toolbar-title>span,.pane-title{color:#57606a;letter-spacing:.12em}
+.editor-toolbar-actions{margin-left:auto}.pane-title{color:#57606a;letter-spacing:.12em}
 .meta{gap:12px;padding:14px 16px;background:#fff;border-bottom-color:var(--line)}
 #front{height:104px}.pane-title{padding:8px 13px;background:var(--editor-heading)}
 #body{padding:22px 26px}.preview{background:#fff}#preview{padding:22px 30px}

@@ -12,6 +12,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 - Refreshed the interface with a compact GitHub Primer-inspired layout and clearer article selection states.
 - Unified buttons, form controls, dialogs, menus, and Git panels with compact Fluent-inspired component styling.
 - Reorganized global controls with an explicit site-change action, language and Git inside the tools menu, and search and sort together in the Contents sidebar.
+- Simplified the editor toolbar to Zen Mode, Save, and an overflow menu for destructive post actions.
 
 ## [0.2.17] - 2026-07-20
 

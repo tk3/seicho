@@ -20,6 +20,7 @@ function selectSortOrder(storedOrder){return sortOrders.includes(storedOrder)?st
 function buildPostPayload(fields,current){
  return {path:fields.path,originalPath:current.path,frontMatter:fields.frontMatter,body:fields.body,delimiter:current.delimiter,modified:current.modified};
 }
+function closeDetails(details){if(details)details.open=false}
 async function requestJSON(fetchImplementation,url,options={},locale='en'){
  const response=await fetchImplementation(url,{...options,headers:{'Content-Type':'application/json','Accept-Language':locale,...options.headers}});
  if(!response.ok){
@@ -28,7 +29,7 @@ async function requestJSON(fetchImplementation,url,options={},locale='en'){
  }
  return response.status===204?null:response.json();
 }
-const api={escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,buildPostPayload,requestJSON};
+const api={escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,buildPostPayload,closeDetails,requestJSON};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else Object.assign(root,api);
 })(typeof globalThis==='object'?globalThis:this);

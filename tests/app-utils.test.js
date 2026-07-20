@@ -1,6 +1,6 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,buildPostPayload,requestJSON}=require('../web/app-utils.js');
+const {escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,buildPostPayload,closeDetails,requestJSON}=require('../web/app-utils.js');
 
 test('escapes HTML-sensitive characters',()=>{
  assert.equal(escapeHTML(`<a title="x">Tom & Jerry's</a>`),'&lt;a title=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/a&gt;');
@@ -63,6 +63,12 @@ test('restores supported sort orders and rejects stale values',()=>{
 test('builds a save payload without changing Markdown whitespace',()=>{
  const payload=buildPostPayload({path:'posts/renamed.md',frontMatter:'title: Test',body:'\nFirst line'}, {path:'posts/original.md',delimiter:'---',modified:'stamp'});
  assert.deepEqual(payload,{path:'posts/renamed.md',originalPath:'posts/original.md',frontMatter:'title: Test',body:'\nFirst line',delimiter:'---',modified:'stamp'});
+});
+
+test('closes an article actions menu',()=>{
+ const details={open:true};
+ closeDetails(details);
+ assert.equal(details.open,false);
 });
 
 test('requests JSON with language and content headers',async()=>{
