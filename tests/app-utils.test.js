@@ -1,6 +1,6 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,buildPostPayload,closeDetails,requestJSON}=require('../web/app-utils.js');
+const {escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,selectTheme,nextTheme,themeIcon,applyTheme,buildPostPayload,closeDetails,requestJSON}=require('../web/app-utils.js');
 
 test('escapes HTML-sensitive characters',()=>{
  assert.equal(escapeHTML(`<a title="x">Tom & Jerry's</a>`),'&lt;a title=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/a&gt;');
@@ -58,6 +58,23 @@ test('restores supported sort orders and rejects stale values',()=>{
  assert.equal(selectSortOrder('date-desc'),'date-desc');
  assert.equal(selectSortOrder('unknown-order'),'modified-desc');
  assert.equal(selectSortOrder(null),'modified-desc');
+});
+
+test('restores and toggles the saved appearance',()=>{
+ assert.equal(selectTheme('dark'),'dark');
+ assert.equal(selectTheme('light'),'light');
+ assert.equal(selectTheme('unknown'),'light');
+ assert.equal(nextTheme('light'),'dark');
+ assert.equal(nextTheme('dark'),'light');
+ assert.equal(themeIcon('light'),'☀');
+ assert.equal(themeIcon('dark'),'☾');
+});
+
+test('applies the selected appearance to the document root',()=>{
+ const root={dataset:{},style:{}};
+ applyTheme(root,'dark');
+ assert.equal(root.dataset.theme,'dark');
+ assert.equal(root.style.colorScheme,'dark');
 });
 
 test('builds a save payload without changing Markdown whitespace',()=>{

@@ -3,6 +3,9 @@ button{border:1px solid transparent;border-radius:6px;padding:7px 12px;font-size
 .primary:hover{background:var(--button-hover)}
 .ghost{border-color:var(--line);background:#f6f8fa;color:#24292f;box-shadow:0 1px 0 rgba(27,31,36,.04)}
 .ghost:hover{border-color:#afb8c1;background:#f3f4f6;color:#24292f}
+.theme-toggle{display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;background:transparent;color:#57606a;font-size:18px;line-height:1}
+.theme-toggle:hover{background:var(--navigation);color:var(--ink)}
+.theme-toggle:focus-visible{outline:2px solid var(--button-border);outline-offset:2px}
 label{gap:6px;color:#57606a;font-size:var(--font-size-label);letter-spacing:.04em}
 input,textarea,select{border-color:var(--line);border-radius:6px;background:#fff;color:var(--ink);font-family:inherit;font-size:var(--font-size-control)}
 input,textarea{padding:8px 10px}

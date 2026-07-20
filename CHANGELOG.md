@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- Added persistent light and dark themes with an icon toggle beside the site-change action.
+
 ### Changed
 
 - Refreshed the interface with a compact GitHub Primer-inspired layout and clearer article selection states.

@@ -11,6 +11,10 @@ messages.ja.tools='ツール';
 messages.en.tools='Tools';
 messages.ja.postActions='記事の操作';
 messages.en.postActions='Post actions';
+messages.ja.switchToLight='ライトテーマに切り替える';
+messages.en.switchToLight='Switch to light theme';
+messages.ja.switchToDark='ダークテーマに切り替える';
+messages.en.switchToDark='Switch to dark theme';
 function translate(locale,key){return messages[locale]?.[key]||key}
 const api={messages,translate};
 if(typeof module==='object'&&module.exports)module.exports=api;

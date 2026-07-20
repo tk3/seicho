@@ -17,6 +17,10 @@ function filterAndSortPosts(posts,query,sort){
 }
 const sortOrders=['modified-desc','modified-asc','date-desc'];
 function selectSortOrder(storedOrder){return sortOrders.includes(storedOrder)?storedOrder:'modified-desc'}
+function selectTheme(storedTheme){return storedTheme==='dark'?'dark':'light'}
+function nextTheme(theme){return theme==='dark'?'light':'dark'}
+function themeIcon(theme){return theme==='dark'?'☾':'☀'}
+function applyTheme(rootElement,theme){rootElement.dataset.theme=theme;rootElement.style.colorScheme=theme}
 function buildPostPayload(fields,current){
  return {path:fields.path,originalPath:current.path,frontMatter:fields.frontMatter,body:fields.body,delimiter:current.delimiter,modified:current.modified};
 }
@@ -29,7 +33,7 @@ async function requestJSON(fetchImplementation,url,options={},locale='en'){
  }
  return response.status===204?null:response.json();
 }
-const api={escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,buildPostPayload,closeDetails,requestJSON};
+const api={escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,selectTheme,nextTheme,themeIcon,applyTheme,buildPostPayload,closeDetails,requestJSON};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else Object.assign(root,api);
 })(typeof globalThis==='object'?globalThis:this);

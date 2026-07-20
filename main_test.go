@@ -51,16 +51,17 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 		t.Fatal("site path placeholder is not platform-neutral")
 	}
 	shell := recorder.Body.String()
+	themeIndex := strings.Index(shell, `id="theme-toggle"`)
 	siteIndex := strings.Index(shell, `id="change-site"`)
 	toolsIndex := strings.Index(shell, `id="tools-menu"`)
 	languageIndex := strings.Index(shell, `id="language"`)
-	if siteIndex < 0 || toolsIndex < siteIndex || languageIndex < toolsIndex {
-		t.Fatal("header controls are not ordered as site change followed by the tools menu")
+	if themeIndex < 0 || siteIndex < themeIndex || toolsIndex < siteIndex || languageIndex < toolsIndex {
+		t.Fatal("header controls are not ordered as appearance, site change, and tools")
 	}
 	if !strings.Contains(shell, `<summary data-i18n-aria="tools" data-i18n-title="tools">…</summary>`) {
 		t.Fatal("tools menu does not use the transparent ellipsis trigger")
 	}
-	for _, asset := range []string{"/favicon.svg", "/tokens.css", "/interface-theme.css", "/component-theme.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
+	for _, asset := range []string{"/favicon.svg", "/tokens.css", "/interface-theme.css", "/component-theme.css", "/color-schemes.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		if !strings.Contains(recorder.Body.String(), asset) {
 			t.Errorf("application shell does not reference %s", asset)
 		}
@@ -68,7 +69,7 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 }
 
 func TestStaticServesRefactoredAssets(t *testing.T) {
-	for _, path := range []string{"/favicon.svg", "/tokens.css", "/interface-theme.css", "/component-theme.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
+	for _, path := range []string{"/favicon.svg", "/tokens.css", "/interface-theme.css", "/component-theme.css", "/color-schemes.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		recorder := httptest.NewRecorder()
 		static(recorder, httptest.NewRequest("GET", path, nil))
 		if recorder.Code != http.StatusOK {

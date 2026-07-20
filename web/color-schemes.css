@@ -1,0 +1,71 @@
+html[data-theme="dark"]{
+ --ink:#f0f3f6;
+ --muted:#8c959f;
+ --paper:#0d1117;
+ --panel:#161b22;
+ --line:#30363d;
+ --navigation:#161b22;
+ --editor-heading:#161b22;
+ --button:#1f6feb;
+ --button-hover:#388bfd;
+ --button-soft:#1f2d3d;
+ --button-border:#484f58;
+ --button-ink:#58a6ff;
+ --deep:#010409;
+}
+html[data-theme="dark"] body,
+html[data-theme="dark"] .editor,
+html[data-theme="dark"] .preview{background:#0d1117;color:var(--ink)}
+html[data-theme="dark"] header,
+html[data-theme="dark"] aside,
+html[data-theme="dark"] .editor-toolbar,
+html[data-theme="dark"] .meta,
+html[data-theme="dark"] .dialog,
+html[data-theme="dark"] .tools-menu-list,
+html[data-theme="dark"] .post-actions-list,
+html[data-theme="dark"] .git-panel{background:#161b22;color:var(--ink)}
+html[data-theme="dark"] .brand strong,
+html[data-theme="dark"] .post strong,
+html[data-theme="dark"] .tools-menu summary:hover,
+html[data-theme="dark"] .tools-menu[open] summary,
+html[data-theme="dark"] .post-actions-menu summary:hover,
+html[data-theme="dark"] .post-actions-menu[open] summary{color:#f0f3f6}
+html[data-theme="dark"] .brand small,
+html[data-theme="dark"] .aside-title,
+html[data-theme="dark"] .pane-title,
+html[data-theme="dark"] label,
+html[data-theme="dark"] .theme-toggle,
+html[data-theme="dark"] .tools-menu summary,
+html[data-theme="dark"] .post-actions-menu summary{color:#8c959f}
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select{border-color:#30363d;background:#0d1117;color:#f0f3f6}
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] textarea:focus,
+html[data-theme="dark"] select:focus{border-color:#58a6ff;outline-color:rgba(88,166,255,.25)}
+html[data-theme="dark"] .ghost{border-color:#30363d;background:#21262d;color:#f0f3f6;box-shadow:0 1px 0 rgba(1,4,9,.4)}
+html[data-theme="dark"] .ghost:hover{border-color:#8c959f;background:#30363d;color:#fff}
+html[data-theme="dark"] .theme-toggle:hover,
+html[data-theme="dark"] .sort-control:hover,
+html[data-theme="dark"] .sort-control:focus-within{background:#21262d;color:#f0f3f6}
+html[data-theme="dark"] .post:hover,
+html[data-theme="dark"] .post.active{background:#21262d;border-color:#30363d}
+html[data-theme="dark"] .post.active{box-shadow:inset 3px 0 #58a6ff}
+html[data-theme="dark"] .pane-title{background:#161b22}
+html[data-theme="dark"] #body{background:#0d1117;color:#f0f3f6}
+html[data-theme="dark"] #preview pre,
+html[data-theme="dark"] .git-diff{background:#010409;color:#f0f3f6}
+html[data-theme="dark"] .dialog-actions .secondary{border-color:#30363d;background:#21262d;color:#f0f3f6}
+html[data-theme="dark"] .dialog-actions .secondary:hover,
+html[data-theme="dark"] .modal-close:hover{background:#30363d;color:#fff}
+html[data-theme="dark"] .tools-menu-list button{color:#f0f3f6}
+html[data-theme="dark"] .tools-menu-list button:hover,
+html[data-theme="dark"] .git-change:hover{background:#21262d}
+html[data-theme="dark"] .post-actions-list .danger:hover{background:#3d1f1b}
+html[data-theme="dark"] .git-branch{background:#1f2d3d;color:#58a6ff}
+html[data-theme="dark"] .git-change,
+html[data-theme="dark"] .git-diff{border-color:#30363d}
+html[data-theme="dark"] .git-commit .primary:disabled{border-color:#30363d;background:#21262d;color:#6e7681}
+html[data-theme="dark"] .delete-target{border-color:#6e3326;background:#2d1814;color:#f0b8a8}
+html[data-theme="dark"] body.zen-mode .editor,
+html[data-theme="dark"] body.zen-mode #body{background:#0d1117;color:#f0f3f6}
