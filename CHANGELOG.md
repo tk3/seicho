@@ -7,16 +7,18 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.19] - 2026-07-25
+
+### Added
+
+- Added delayed loading feedback and duplicate-submission protection while creating a post.
+
 ### Changed
 
 - Arranged the language label and selector on one line in the tools menu.
 - Standardized placeholder color, weight, and letter spacing across input fields.
 - Standardized multiline text editors on the shared monospace font while retaining role-appropriate sizes.
 - Shortened the Markdown editor prompt to a more inviting phrase.
-
-### Added
-
-- Added delayed loading feedback and duplicate-submission protection while creating a post.
 
 ## [0.2.18] - 2026-07-20
 

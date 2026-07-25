@@ -13,7 +13,7 @@ import (
 
 // version can be replaced at build time with:
 // go build -ldflags "-X main.version=1.0.0" .
-var version = "0.2.18"
+var version = "0.2.19"
 
 func main() {
 	root := flag.String("site", "", "Hugo site directory")
