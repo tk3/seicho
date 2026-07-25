@@ -33,6 +33,8 @@ Use these rules for every user-visible interface change in Seicho.
 
 - Use the font-size variables in `web/tokens.css` according to the content role.
 - Use the shared monospace font for multiline text editing, with font size selected according to the editor's content role.
+- Keep the Markdown editor and Preview typography aligned by default. Share their font family, font size, line height, and content padding instead of assigning different values based on purpose.
+- Introduce a Markdown–Preview difference only when the difference is necessary for content rendering or interaction, not merely because one area is editable and the other is a preview.
 - Prefer weight and color changes over arbitrary font-size changes when adjusting visual emphasis.
 - Use theme variables instead of fixed colors when a value should change between light and dark appearances.
 - Render all placeholder text with the shared placeholder color, regular font weight, and normal letter spacing so its emphasis remains consistent; inherit font family and size from the field's content role.
