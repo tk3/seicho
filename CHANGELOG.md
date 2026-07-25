@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.20] - 2026-07-25
+
 ### Changed
 
 - Moved the sort control beside the new-post action in the Contents header.
