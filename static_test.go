@@ -39,6 +39,11 @@ func TestStaticServesEditorRoutes(t *testing.T) {
 	if !strings.Contains(shell, `<summary data-i18n-aria="tools" data-i18n-title="tools">…</summary>`) {
 		t.Fatal("tools menu does not use the transparent ellipsis trigger")
 	}
+	sortIndex := strings.Index(shell, `id="sort"`)
+	newPostIndex := strings.Index(shell, `id="new"`)
+	if sortIndex < 0 || newPostIndex < sortIndex {
+		t.Fatal("sidebar actions are not ordered as sort and new post")
+	}
 	for _, asset := range []string{"/favicon.svg", "/tokens.css", "/interface-theme.css", "/component-theme.css", "/color-schemes.css", "/router.js", "/i18n.js", "/editor-view.js", "/git-panel.css", "/git-panel.js"} {
 		if !strings.Contains(recorder.Body.String(), asset) {
 			t.Errorf("application shell does not reference %s", asset)
@@ -70,6 +75,23 @@ func TestButtonSizesUseSharedTokens(t *testing.T) {
 	for _, class := range []string{".button-compact", ".button-icon"} {
 		if !strings.Contains(components.Body.String(), class) {
 			t.Errorf("component-theme.css does not define %s", class)
+		}
+	}
+}
+
+func TestEditorLayoutKeepsPreviewScrollable(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	static(recorder, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))
+	stylesheet := recorder.Body.String()
+	for _, rule := range []string{
+		`.editor .workspace{height:auto;min-height:0;flex:1}`,
+		`.editor .workspace section{min-height:0}`,
+		`#body,#preview{padding:22px 26px;font-family:var(--font-mono);font-size:var(--font-size-body);line-height:1.75}`,
+		`#preview{min-height:0;flex:1}`,
+		`#preview>:first-child{margin-top:0}`,
+	} {
+		if !strings.Contains(stylesheet, rule) {
+			t.Errorf("interface-theme.css does not preserve scroll constraint %s", rule)
 		}
 	}
 }

@@ -7,9 +7,18 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Changed
+
+- Moved the sort control beside the new-post action in the Contents header.
+- Aligned Markdown and Preview typography, spacing, and line height.
+
 ### Added
 
 - Added a persistent collapsible Front Matter section that gives more space to the editor when closed.
+
+### Fixed
+
+- Restored scrolling in the Preview pane after making Front Matter collapsible.
 
 ## [0.2.19] - 2026-07-25
 
