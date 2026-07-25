@@ -10,7 +10,8 @@ function setEditorVisible(editor,empty,visible){
 }
 function setDialogVisible(dialog,visible){dialog.classList.toggle('hidden',!visible)}
 function setControlsDisabled(controls,disabled){controls.forEach(control=>{control.disabled=disabled})}
-const api={populatePostFields,setEditorVisible,setDialogVisible,setControlsDisabled};
+function setDisclosureState(button,panel,expanded){button.setAttribute('aria-expanded',String(expanded));panel.classList.toggle('hidden',!expanded)}
+const api={populatePostFields,setEditorVisible,setDialogVisible,setControlsDisabled,setDisclosureState};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else Object.assign(root,api);
 })(typeof globalThis==='object'?globalThis:this);

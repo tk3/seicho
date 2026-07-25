@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- Added a persistent collapsible Front Matter section that gives more space to the editor when closed.
+
 ## [0.2.19] - 2026-07-25
 
 ### Added

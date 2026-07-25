@@ -1,6 +1,7 @@
 const $=s=>document.querySelector(s);let posts=[],current=null,dirty=false,siteConfigured=false;
 let locale=selectLocale(localStorage.getItem('seicho-language'),navigator.language);
 let theme=selectTheme(localStorage.getItem('seicho-theme'));
+let frontMatterOpen=localStorage.getItem('seicho-front-matter-open')==='true';
 function t(key){return translate(locale,key)}
 function updateThemeControl(){applyTheme(document.documentElement,theme);$('#theme-icon').textContent=themeIcon(theme);const label=t(theme==='dark'?'switchToLight':'switchToDark');$('#theme-toggle').title=label;$('#theme-toggle').setAttribute('aria-label',label)}
 function applyLanguage(){document.documentElement.lang=locale;$('#language').value=locale;document.querySelectorAll('[data-i18n]').forEach(el=>el.textContent=t(el.dataset.i18n));document.querySelectorAll('[data-i18n-title]').forEach(el=>el.title=t(el.dataset.i18nTitle));document.querySelectorAll('[data-i18n-aria]').forEach(el=>el.setAttribute('aria-label',t(el.dataset.i18nAria)));document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));if(!siteConfigured)$('#site-name').textContent=t('siteNotSelected');updateThemeControl();updateCharacterCount();renderList();if(current)render()}
@@ -10,6 +11,7 @@ function showSetup(show=true){setDialogVisible($('#setup'),show);$('#close-setup
 async function boot(){applyLanguage();const site=await api('/api/site');siteConfigured=site.configured;$('#app-version').textContent='v'+site.version;if(!site.configured)return showSetup();$('#site-name').textContent=site.path;await loadPosts();await restorePostFromRoute()}
 function changeLanguage(e){locale=e.target.value;localStorage.setItem('seicho-language',locale);applyLanguage();gitPanel.render()}$('#language').onchange=changeLanguage;
 $('#theme-toggle').onclick=()=>{theme=nextTheme(theme);localStorage.setItem('seicho-theme',theme);updateThemeControl()};
+function updateFrontMatter(open,persist=false){frontMatterOpen=open;setDisclosureState($('#front-toggle'),$('#front-matter-fields'),open);if(persist)localStorage.setItem('seicho-front-matter-open',String(open))}updateFrontMatter(frontMatterOpen);$('#front-toggle').onclick=()=>updateFrontMatter(!frontMatterOpen,true);
 $('#site-form').onsubmit=async e=>{e.preventDefault();const changingSite=siteConfigured;try{const site=await api('/api/site',{method:'POST',body:JSON.stringify({path:$('#site-path').value})});siteConfigured=true;$('#app-version').textContent='v'+site.version;$('#site-name').textContent=site.path;showSetup(false);$('#setup-error').value='';if(changingSite){clearPostRoute(history);showEmptyEditor()}await loadPosts();if(!changingSite)await restorePostFromRoute()}catch(e){$('#setup-error').value=e.message}}
 $('#change-site').onclick=()=>showSetup();$('#close-setup').onclick=()=>showSetup(false);
 async function loadPosts(){posts=await api('/api/posts');renderList();gitPanel.refresh().catch(()=>{})}

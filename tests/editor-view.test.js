@@ -1,6 +1,6 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {populatePostFields,setEditorVisible,setDialogVisible,setControlsDisabled}=require('../web/editor-view.js');
+const {populatePostFields,setEditorVisible,setDialogVisible,setControlsDisabled,setDisclosureState}=require('../web/editor-view.js');
 
 function classList(){
  const classes=new Set(['hidden']);
@@ -37,4 +37,16 @@ test('disables and restores controls during form submission',()=>{
  assert.deepEqual(controls.map(control=>control.disabled),[true,true,true]);
  setControlsDisabled(controls,false);
  assert.deepEqual(controls.map(control=>control.disabled),[false,false,false]);
+});
+
+test('expands and collapses a disclosure panel',()=>{
+ const attributes={};
+ const button={setAttribute(name,value){attributes[name]=value}};
+ const panel={classList:classList()};
+ setDisclosureState(button,panel,true);
+ assert.equal(attributes['aria-expanded'],'true');
+ assert.equal(panel.classList.contains('hidden'),false);
+ setDisclosureState(button,panel,false);
+ assert.equal(attributes['aria-expanded'],'false');
+ assert.equal(panel.classList.contains('hidden'),true);
 });
