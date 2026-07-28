@@ -7,6 +7,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+### Added
+
+- Added a light and dark theme toggle to the Zen Mode toolbar.
+
 ## [0.2.20] - 2026-07-25
 
 ### Changed

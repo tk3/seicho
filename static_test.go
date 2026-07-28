@@ -96,6 +96,28 @@ func TestEditorLayoutKeepsPreviewScrollable(t *testing.T) {
 	}
 }
 
+func TestZenModeProvidesThemeToggle(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	static(recorder, httptest.NewRequest(http.MethodGet, "/", nil))
+	if !strings.Contains(recorder.Body.String(), `id="zen-theme-toggle" class="theme-toggle zen-theme-toggle"`) {
+		t.Fatal("Zen Mode does not provide the shared theme toggle")
+	}
+
+	recorder = httptest.NewRecorder()
+	static(recorder, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))
+	stylesheet := recorder.Body.String()
+	if !strings.Contains(stylesheet, `.editor-toolbar .zen-theme-toggle{display:none}`) || !strings.Contains(stylesheet, `body.zen-mode .editor-toolbar .zen-theme-toggle{display:grid}`) {
+		t.Fatal("Zen Mode theme toggle visibility is not scoped to Zen Mode")
+	}
+
+	recorder = httptest.NewRecorder()
+	static(recorder, httptest.NewRequest(http.MethodGet, "/app.js", nil))
+	script := recorder.Body.String()
+	if !strings.Contains(script, `document.querySelectorAll('.theme-toggle')`) || !strings.Contains(script, `$('#theme-toggle').onclick=$('#zen-theme-toggle').onclick=toggleTheme`) {
+		t.Fatal("theme controls do not share synchronized behavior")
+	}
+}
+
 func TestFaviconUsesApplicationAccentColor(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	static(recorder, httptest.NewRequest(http.MethodGet, "/favicon.svg", nil))
