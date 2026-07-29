@@ -124,6 +124,14 @@ func TestHeaderIdentityUsesConsistentAlignment(t *testing.T) {
 	}
 }
 
+func TestContentsPostTitlesAreEmphasized(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	static(recorder, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))
+	if !strings.Contains(recorder.Body.String(), `.post strong{color:#24292f;font-size:var(--font-size-compact);font-weight:600}`) {
+		t.Fatal("Contents post titles do not use the emphasized font weight")
+	}
+}
+
 func TestEditorLayoutKeepsPreviewScrollable(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	static(recorder, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))

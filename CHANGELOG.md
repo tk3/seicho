@@ -10,6 +10,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 ### Changed
 
 - Reduced the header height slightly to provide more room for content.
+- Increased the emphasis of post titles in the Contents list.
 
 ### Fixed
 

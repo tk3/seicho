@@ -37,7 +37,7 @@ aside{padding:16px 12px;background:var(--navigation);border-right:1px solid var(
 .post{position:relative;margin-bottom:2px;padding:9px 10px;border:1px solid transparent;border-radius:6px}
 .post:hover{background:#fff;border-color:#d8dee4}
 .post.active{background:#fff;border-color:#afb8c1;box-shadow:inset 3px 0 #0969da}
-.post strong{color:#24292f;font-size:var(--font-size-compact)}
+.post strong{color:#24292f;font-size:var(--font-size-compact);font-weight:600}
 .post small{font-size:var(--font-size-label)}
 .editor{display:flex;min-height:0;flex-direction:column;overflow:hidden;background:#fff}
 .editor-toolbar{position:sticky;top:0;z-index:3;display:flex;min-height:56px;align-items:center;gap:20px;padding:8px 16px;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);box-shadow:none;backdrop-filter:blur(10px)}
