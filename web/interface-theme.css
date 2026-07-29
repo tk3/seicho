@@ -13,7 +13,7 @@
  --button-ink:#0969da;
 }
 body{background:#fff;font-size:var(--font-size-body)}
-.shell{grid-template-columns:272px minmax(0,1fr);grid-template-rows:64px calc(100vh - 64px)}
+.shell{grid-template-columns:272px minmax(0,1fr);grid-template-rows:var(--header-height) calc(100vh - var(--header-height))}
 header{padding:0 20px;background:#fff;border-bottom:1px solid var(--line)}
 .header-primary,.brand,.actions{display:flex;align-items:center;gap:10px}
 .brand>div{min-width:0}

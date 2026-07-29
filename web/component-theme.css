@@ -67,7 +67,7 @@ kbd{font-size:var(--font-size-micro)}
 .post-actions-list{position:absolute;right:0;z-index:6;width:160px;padding:6px;border-style:solid;border-width:1px}
 .post-actions-list .danger{width:100%;margin:0;border:0;background:transparent;text-align:left}
 .post-actions-list .danger:hover{background:#fff1ed}
-.git-panel{top:64px;padding:20px;border-left-color:var(--line);box-shadow:-8px 0 24px rgba(140,149,159,.2)}
+.git-panel{top:var(--header-height);padding:20px;border-left-color:var(--line);box-shadow:-8px 0 24px rgba(140,149,159,.2)}
 .git-change{border-color:var(--line);border-radius:6px}
 .git-change:hover{background:#f6f8fa}
 .git-change-main{height:auto}
@@ -77,4 +77,4 @@ kbd{font-size:var(--font-size-micro)}
 .git-repository-state,.git-empty{font-size:var(--font-size-compact)}
 .git-change-path,.git-branch,.git-commit-hint{font-size:var(--font-size-label)}
 .git-panel h3,.git-change-status,.git-change-actions button,.git-diff{font-size:11px}
-@media(max-width:600px){.git-panel{top:64px}.editor-toolbar .toolbar-save{min-width:auto}}
+@media(max-width:600px){.git-panel{top:var(--header-height)}.editor-toolbar .toolbar-save{min-width:auto}}

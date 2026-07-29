@@ -79,6 +79,26 @@ func TestButtonSizesUseSharedTokens(t *testing.T) {
 	}
 }
 
+func TestHeaderHeightUsesSharedToken(t *testing.T) {
+	tokens := httptest.NewRecorder()
+	static(tokens, httptest.NewRequest(http.MethodGet, "/tokens.css", nil))
+	if !strings.Contains(tokens.Body.String(), `--header-height:56px`) {
+		t.Fatal("tokens.css does not define the compact header height")
+	}
+
+	interfaceStyles := httptest.NewRecorder()
+	static(interfaceStyles, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))
+	if !strings.Contains(interfaceStyles.Body.String(), `grid-template-rows:var(--header-height) calc(100vh - var(--header-height))`) {
+		t.Fatal("application shell does not use the shared header height")
+	}
+
+	componentStyles := httptest.NewRecorder()
+	static(componentStyles, httptest.NewRequest(http.MethodGet, "/component-theme.css", nil))
+	if !strings.Contains(componentStyles.Body.String(), `.git-panel{top:var(--header-height)`) {
+		t.Fatal("Git panel is not aligned to the shared header height")
+	}
+}
+
 func TestEditorLayoutKeepsPreviewScrollable(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	static(recorder, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))
