@@ -18,6 +18,7 @@ func writeStartupTrace(output io.Writer, address, site string) {
 	if site == "" {
 		site = "(not selected)"
 	}
+	fmt.Fprintf(output, "Started: %s\n", logTimestamp(time.Now()))
 	fmt.Fprintf(output, "Seicho %s\n", version)
 	fmt.Fprintf(output, "OS: %s/%s\n", runtime.GOOS, runtime.GOARCH)
 	fmt.Fprintf(output, "Go: %s\n", runtime.Version())
@@ -82,12 +83,13 @@ func accessTrace(output io.Writer, next http.Handler) http.Handler {
 				status = http.StatusOK
 			}
 			duration := time.Since(started).Round(time.Microsecond)
+			timestamp := logTimestamp(time.Now())
 			outputMu.Lock()
 			defer outputMu.Unlock()
 			if panicValue != nil {
-				fmt.Fprintf(output, "[%s] PANIC %v\n%s", requestID, panicValue, debug.Stack())
+				fmt.Fprintf(output, "%s [%s] PANIC %v\n%s", timestamp, requestID, panicValue, debug.Stack())
 			}
-			fmt.Fprintf(output, "[%s] %s %s %d %s", requestID, r.Method, r.URL.RequestURI(), status, duration)
+			fmt.Fprintf(output, "%s [%s] %s %s %d %s", timestamp, requestID, r.Method, r.URL.RequestURI(), status, duration)
 			if writer.err != nil {
 				fmt.Fprintf(output, " error=%q", writer.err.Error())
 			}
@@ -95,6 +97,10 @@ func accessTrace(output io.Writer, next http.Handler) http.Handler {
 		}()
 		next.ServeHTTP(writer, r)
 	})
+}
+
+func logTimestamp(value time.Time) string {
+	return value.Format(time.RFC3339)
 }
 
 func securityHeaders(next http.Handler) http.Handler {

@@ -5,9 +5,11 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"runtime"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestAccessTraceWritesRelativeURLAndStatus(t *testing.T) {
@@ -19,6 +21,9 @@ func TestAccessTraceWritesRelativeURLAndStatus(t *testing.T) {
 	handler.ServeHTTP(recorder, httptest.NewRequest("GET", "/api/posts?q=draft", nil))
 	if got := output.String(); !strings.Contains(got, "] GET /api/posts?q=draft 201 ") {
 		t.Fatalf("unexpected trace: %q", got)
+	}
+	if !regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2}) \[`).MatchString(output.String()) {
+		t.Fatalf("trace does not start with an RFC 3339 timestamp: %q", output.String())
 	}
 	if recorder.Header().Get("X-Request-ID") == "" {
 		t.Fatal("X-Request-ID was not set")
@@ -103,6 +108,7 @@ func TestStartupTraceIncludesRuntimeInformation(t *testing.T) {
 	var output bytes.Buffer
 	writeStartupTrace(&output, "127.0.0.1:1221", "/path/to/site")
 	for _, expected := range []string{
+		"Started: ",
 		"Seicho " + version,
 		"OS: " + runtime.GOOS + "/" + runtime.GOARCH,
 		"Go: " + runtime.Version(),
@@ -113,5 +119,16 @@ func TestStartupTraceIncludesRuntimeInformation(t *testing.T) {
 		if !strings.Contains(output.String(), expected) {
 			t.Errorf("startup trace does not contain %q: %s", expected, output.String())
 		}
+	}
+	firstLine := strings.SplitN(output.String(), "\n", 2)[0]
+	if _, err := time.Parse(time.RFC3339, strings.TrimPrefix(firstLine, "Started: ")); err != nil {
+		t.Fatalf("startup timestamp is not RFC 3339: %q", firstLine)
+	}
+}
+
+func TestLogTimestampIncludesDateAndTimezone(t *testing.T) {
+	zone := time.FixedZone("JST", 9*60*60)
+	if got := logTimestamp(time.Date(2026, 7, 29, 14, 32, 10, 0, zone)); got != "2026-07-29T14:32:10+09:00" {
+		t.Fatalf("logTimestamp() = %q", got)
 	}
 }

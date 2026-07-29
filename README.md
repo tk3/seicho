@@ -52,7 +52,7 @@ To display version information:
 ./seicho -version
 ```
 
-Use `-trace` to write startup information and access details to standard output. Access logs include a request ID, HTTP method, relative URL, HTTP status, processing time, and any API error. If a panic occurs, Seicho also writes a stack trace with the same request ID.
+Use `-trace` to write startup information and access details to standard output. Log entries use RFC 3339 timestamps with a timezone. Access logs also include a request ID, HTTP method, relative URL, HTTP status, processing time, and any API error. If a panic occurs, Seicho writes a stack trace with the same timestamp and request ID.
 
 ```bash
 ./seicho -port 1221 -trace
@@ -61,6 +61,7 @@ Use `-trace` to write startup information and access details to standard output.
 Example output:
 
 ```text
+Started: 2026-07-29T14:32:10+09:00
 Seicho 0.2.8
 OS: windows/amd64
 Go: go1.26.5
@@ -68,9 +69,9 @@ PID: 12345
 Listen: http://127.0.0.1:1221
 Site: /path/to/hugo-site
 Trace: enabled
-[00000001] GET / 200 420µs
-[00000002] GET /api/posts 200 1.2ms
-[00000003] PUT /api/post 500 2.1ms error="open content/posts/example.md: permission denied"
+2026-07-29T14:32:11+09:00 [00000001] GET / 200 420µs
+2026-07-29T14:32:11+09:00 [00000002] GET /api/posts 200 1.2ms
+2026-07-29T14:32:12+09:00 [00000003] PUT /api/post 500 2.1ms error="open content/posts/example.md: permission denied"
 ```
 
 ## Features
