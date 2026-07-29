@@ -116,9 +116,11 @@ func (s *server) createPost(w http.ResponseWriter, r *http.Request, root string)
 	relative, _ := filepath.Rel(filepath.Join(root, "content"), path)
 	ctx, cancel := context.WithTimeout(r.Context(), 30*time.Second)
 	defer cancel()
-	command := exec.CommandContext(ctx, "hugo", "new", "content", filepath.ToSlash(relative))
-	command.Dir = root
-	output, err := command.CombinedOutput()
+	runHugoNew := s.hugoNew
+	if runHugoNew == nil {
+		runHugoNew = runHugoNewCommand
+	}
+	output, err := runHugoNew(ctx, root, filepath.ToSlash(relative))
 	if err != nil {
 		if errors.Is(ctx.Err(), context.DeadlineExceeded) {
 			apiError(w, http.StatusGatewayTimeout, codedError("hugo_new_timeout", ctx.Err()))
@@ -137,6 +139,12 @@ func (s *server) createPost(w http.ResponseWriter, r *http.Request, root string)
 		return
 	}
 	jsonResponse(w, http.StatusCreated, document)
+}
+
+func runHugoNewCommand(ctx context.Context, root, relative string) ([]byte, error) {
+	command := exec.CommandContext(ctx, "hugo", "new", "content", relative)
+	command.Dir = root
+	return command.CombinedOutput()
 }
 
 func (s *server) updatePost(w http.ResponseWriter, r *http.Request, root string) {

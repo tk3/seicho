@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -11,6 +12,7 @@ type server struct {
 	mu       sync.RWMutex
 	root     string
 	markdown goldmark.Markdown
+	hugoNew  func(context.Context, string, string) ([]byte, error)
 }
 
 type postSummary struct {
