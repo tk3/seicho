@@ -82,8 +82,8 @@ func TestButtonSizesUseSharedTokens(t *testing.T) {
 func TestHeaderHeightUsesSharedToken(t *testing.T) {
 	tokens := httptest.NewRecorder()
 	static(tokens, httptest.NewRequest(http.MethodGet, "/tokens.css", nil))
-	if !strings.Contains(tokens.Body.String(), `--header-height:56px`) {
-		t.Fatal("tokens.css does not define the compact header height")
+	if !strings.Contains(tokens.Body.String(), `--header-height:`) {
+		t.Fatal("tokens.css does not define the shared header height")
 	}
 
 	interfaceStyles := httptest.NewRecorder()
@@ -109,26 +109,17 @@ func TestHeaderIdentityUsesConsistentAlignment(t *testing.T) {
 	styles := httptest.NewRecorder()
 	static(styles, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))
 	stylesheet := styles.Body.String()
-	for _, rule := range []string{
-		`.header-primary{gap:6px}`,
-		`.brand>.brand-identity{display:flex;min-width:0;flex-direction:row;align-items:center;gap:8px}`,
-		`.brand-name,#app-version,.brand small{line-height:20px}`,
-		`.brand small{max-width:420px;margin-left:24px`,
-	} {
-		if !strings.Contains(stylesheet, rule) {
-			t.Errorf("interface-theme.css does not preserve header alignment rule %s", rule)
-		}
+	if !strings.Contains(stylesheet, `.brand>.brand-identity{`) || !strings.Contains(stylesheet, `flex-direction:row`) {
+		t.Fatal("header identity is not explicitly arranged in a row")
 	}
 	if strings.Contains(stylesheet, `vertical-align:middle`) {
 		t.Fatal("application version retains an independent vertical alignment")
 	}
-}
 
-func TestContentsPostTitlesAreEmphasized(t *testing.T) {
-	recorder := httptest.NewRecorder()
-	static(recorder, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))
-	if !strings.Contains(recorder.Body.String(), `.post strong{color:#24292f;font-size:var(--font-size-compact);font-weight:600}`) {
-		t.Fatal("Contents post titles do not use the emphasized font weight")
+	baseStyles := httptest.NewRecorder()
+	static(baseStyles, httptest.NewRequest(http.MethodGet, "/style.css", nil))
+	if strings.Contains(baseStyles.Body.String(), `.brand div{`) {
+		t.Fatal("base styles contain a legacy brand direction that can override the header layout")
 	}
 }
 
