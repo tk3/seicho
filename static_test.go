@@ -99,6 +99,31 @@ func TestHeaderHeightUsesSharedToken(t *testing.T) {
 	}
 }
 
+func TestHeaderIdentityUsesConsistentAlignment(t *testing.T) {
+	shell := httptest.NewRecorder()
+	static(shell, httptest.NewRequest(http.MethodGet, "/", nil))
+	if !strings.Contains(shell.Body.String(), `<div class="brand-identity"><strong class="brand-name">Seicho</strong><span id="app-version"></span><small id="site-name"></small></div>`) {
+		t.Fatal("header identity is not composed from independent aligned elements")
+	}
+
+	styles := httptest.NewRecorder()
+	static(styles, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))
+	stylesheet := styles.Body.String()
+	for _, rule := range []string{
+		`.header-primary{gap:6px}`,
+		`.brand>.brand-identity{display:flex;min-width:0;flex-direction:row;align-items:center;gap:8px}`,
+		`.brand-name,#app-version,.brand small{line-height:20px}`,
+		`.brand small{max-width:420px;margin-left:24px`,
+	} {
+		if !strings.Contains(stylesheet, rule) {
+			t.Errorf("interface-theme.css does not preserve header alignment rule %s", rule)
+		}
+	}
+	if strings.Contains(stylesheet, `vertical-align:middle`) {
+		t.Fatal("application version retains an independent vertical alignment")
+	}
+}
+
 func TestEditorLayoutKeepsPreviewScrollable(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	static(recorder, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))

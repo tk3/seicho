@@ -11,6 +11,10 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 - Reduced the header height slightly to provide more room for content.
 
+### Fixed
+
+- Aligned the application name, version, site path, and site-change action consistently in the header.
+
 ## [0.2.21] - 2026-07-28
 
 ### Added
