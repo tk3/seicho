@@ -25,6 +25,9 @@ func TestAccessTraceWritesRelativeURLAndStatus(t *testing.T) {
 	if !regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:Z|[+-]\d{2}:\d{2}) \[`).MatchString(output.String()) {
 		t.Fatalf("trace does not start with an RFC 3339 timestamp: %q", output.String())
 	}
+	if !regexp.MustCompile(` \d+\.\d{3}ms\n$`).MatchString(output.String()) {
+		t.Fatalf("trace duration is not expressed consistently in milliseconds: %q", output.String())
+	}
 	if recorder.Header().Get("X-Request-ID") == "" {
 		t.Fatal("X-Request-ID was not set")
 	}
@@ -130,5 +133,20 @@ func TestLogTimestampIncludesDateAndTimezone(t *testing.T) {
 	zone := time.FixedZone("JST", 9*60*60)
 	if got := logTimestamp(time.Date(2026, 7, 29, 14, 32, 10, 0, zone)); got != "2026-07-29T14:32:10+09:00" {
 		t.Fatalf("logTimestamp() = %q", got)
+	}
+}
+
+func TestLogDurationAlwaysUsesMilliseconds(t *testing.T) {
+	for _, test := range []struct {
+		value time.Duration
+		want  string
+	}{
+		{420 * time.Microsecond, "0.420ms"},
+		{1200 * time.Microsecond, "1.200ms"},
+		{2*time.Second + 345*time.Microsecond, "2000.345ms"},
+	} {
+		if got := formatLogDuration(test.value); got != test.want {
+			t.Errorf("formatLogDuration(%s) = %q, want %q", test.value, got, test.want)
+		}
 	}
 }

@@ -82,7 +82,7 @@ func accessTrace(output io.Writer, next http.Handler) http.Handler {
 			if status == 0 {
 				status = http.StatusOK
 			}
-			duration := time.Since(started).Round(time.Microsecond)
+			duration := formatLogDuration(time.Since(started))
 			timestamp := logTimestamp(time.Now())
 			outputMu.Lock()
 			defer outputMu.Unlock()
@@ -101,6 +101,10 @@ func accessTrace(output io.Writer, next http.Handler) http.Handler {
 
 func logTimestamp(value time.Time) string {
 	return value.Format(time.RFC3339)
+}
+
+func formatLogDuration(value time.Duration) string {
+	return fmt.Sprintf("%.3fms", float64(value)/float64(time.Millisecond))
 }
 
 func securityHeaders(next http.Handler) http.Handler {

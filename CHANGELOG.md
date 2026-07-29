@@ -10,6 +10,7 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 ### Changed
 
 - Added timezone-aware dates and times to startup, access, error, and panic trace logs.
+- Standardized trace-log processing times on milliseconds with three decimal places.
 
 ## [0.2.22] - 2026-07-29
 

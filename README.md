@@ -69,9 +69,9 @@ PID: 12345
 Listen: http://127.0.0.1:1221
 Site: /path/to/hugo-site
 Trace: enabled
-2026-07-29T14:32:11+09:00 [00000001] GET / 200 420µs
-2026-07-29T14:32:11+09:00 [00000002] GET /api/posts 200 1.2ms
-2026-07-29T14:32:12+09:00 [00000003] PUT /api/post 500 2.1ms error="open content/posts/example.md: permission denied"
+2026-07-29T14:32:11+09:00 [00000001] GET / 200 0.420ms
+2026-07-29T14:32:11+09:00 [00000002] GET /api/posts 200 1.200ms
+2026-07-29T14:32:12+09:00 [00000003] PUT /api/post 500 2.100ms error="open content/posts/example.md: permission denied"
 ```
 
 ## Features
