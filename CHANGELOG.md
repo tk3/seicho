@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.22] - 2026-07-29
+
 ### Changed
 
 - Reduced the header height slightly to provide more room for content.
