@@ -123,6 +123,27 @@ func TestHeaderIdentityUsesConsistentAlignment(t *testing.T) {
 	}
 }
 
+func TestContentsSidebarCanCollapseToNavigationRail(t *testing.T) {
+	shell := httptest.NewRecorder()
+	static(shell, httptest.NewRequest(http.MethodGet, "/", nil))
+	if !strings.Contains(shell.Body.String(), `id="contents-toggle" class="contents-toggle" aria-controls="contents-panel" aria-expanded="true"`) {
+		t.Fatal("Contents sidebar does not provide an accessible collapse control")
+	}
+
+	styles := httptest.NewRecorder()
+	static(styles, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))
+	stylesheet := styles.Body.String()
+	if !strings.Contains(stylesheet, `body.contents-collapsed .shell{grid-template-columns:44px minmax(0,1fr)}`) || !strings.Contains(stylesheet, `body.contents-collapsed .aside-actions{flex-direction:column;gap:8px}`) {
+		t.Fatal("collapsed Contents sidebar does not preserve the navigation rail")
+	}
+
+	script := httptest.NewRecorder()
+	static(script, httptest.NewRequest(http.MethodGet, "/app.js", nil))
+	if !strings.Contains(script.Body.String(), `seicho-contents-collapsed`) || !strings.Contains(script.Body.String(), `classList.toggle('contents-collapsed'`) {
+		t.Fatal("Contents sidebar state is not persisted and applied")
+	}
+}
+
 func TestEditorLayoutKeepsPreviewScrollable(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	static(recorder, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))

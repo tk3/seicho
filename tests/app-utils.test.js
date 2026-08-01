@@ -1,6 +1,6 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,selectTheme,nextTheme,themeIcon,applyTheme,buildPostPayload,closeDetails,requestJSON}=require('../web/app-utils.js');
+const {escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,selectTheme,selectContentsCollapsed,nextTheme,themeIcon,applyTheme,buildPostPayload,closeDetails,requestJSON}=require('../web/app-utils.js');
 
 test('escapes HTML-sensitive characters',()=>{
  assert.equal(escapeHTML(`<a title="x">Tom & Jerry's</a>`),'&lt;a title=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/a&gt;');
@@ -68,6 +68,12 @@ test('restores and toggles the saved appearance',()=>{
  assert.equal(nextTheme('dark'),'light');
  assert.equal(themeIcon('light'),'☀');
  assert.equal(themeIcon('dark'),'☾');
+});
+
+test('restores only an explicitly collapsed Contents panel',()=>{
+ assert.equal(selectContentsCollapsed('true'),true);
+ assert.equal(selectContentsCollapsed('false'),false);
+ assert.equal(selectContentsCollapsed(null),false);
 });
 
 test('applies the selected appearance to the document root',()=>{

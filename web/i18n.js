@@ -17,6 +17,10 @@ messages.ja.switchToLight='ライトテーマに切り替える';
 messages.en.switchToLight='Switch to light theme';
 messages.ja.switchToDark='ダークテーマに切り替える';
 messages.en.switchToDark='Switch to dark theme';
+messages.ja.openContents='CONTENTSを開く';
+messages.en.openContents='Open Contents';
+messages.ja.closeContents='CONTENTSを閉じる';
+messages.en.closeContents='Close Contents';
 function translate(locale,key){return messages[locale]?.[key]||key}
 const api={messages,translate};
 if(typeof module==='object'&&module.exports)module.exports=api;
