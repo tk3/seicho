@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.24] - 2026-08-01
+
 ### Added
 
 - Added a persistent collapsible Contents sidebar with quick access to creating a post while collapsed.
