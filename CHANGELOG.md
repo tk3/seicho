@@ -7,6 +7,8 @@ and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.ht
 
 ## [Unreleased]
 
+## [0.2.25] - 2026-08-02
+
 ### Fixed
 
 - Kept the DRAFT badge visible when a post title is too long for the Contents list.
