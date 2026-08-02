@@ -144,6 +144,15 @@ func TestContentsSidebarCanCollapseToNavigationRail(t *testing.T) {
 	}
 }
 
+func TestDraftBadgeDoesNotShrinkWithLongPostTitle(t *testing.T) {
+	recorder := httptest.NewRecorder()
+	static(recorder, httptest.NewRequest(http.MethodGet, "/style.css", nil))
+	stylesheet := recorder.Body.String()
+	if !strings.Contains(stylesheet, `.post-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}`) || !strings.Contains(stylesheet, `.post .draft{flex:none;`) {
+		t.Fatal("long post titles can hide or shrink the DRAFT badge")
+	}
+}
+
 func TestEditorLayoutKeepsPreviewScrollable(t *testing.T) {
 	recorder := httptest.NewRecorder()
 	static(recorder, httptest.NewRequest(http.MethodGet, "/interface-theme.css", nil))

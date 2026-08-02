@@ -22,6 +22,7 @@ function selectContentsCollapsed(storedValue){return storedValue==='true'}
 function nextTheme(theme){return theme==='dark'?'light':'dark'}
 function themeIcon(theme){return theme==='dark'?'☾':'☀'}
 function applyTheme(rootElement,theme){rootElement.dataset.theme=theme;rootElement.style.colorScheme=theme}
+function renderPostTitle(title,draft){return `<span class="post-title">${escapeHTML(title)}</span>${draft?'<span class="draft">DRAFT</span>':''}`}
 function buildPostPayload(fields,current){
  return {path:fields.path,originalPath:current.path,frontMatter:fields.frontMatter,body:fields.body,delimiter:current.delimiter,modified:current.modified};
 }
@@ -34,7 +35,7 @@ async function requestJSON(fetchImplementation,url,options={},locale='en'){
  }
  return response.status===204?null:response.json();
 }
-const api={escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,selectTheme,selectContentsCollapsed,nextTheme,themeIcon,applyTheme,buildPostPayload,closeDetails,requestJSON};
+const api={escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,selectTheme,selectContentsCollapsed,nextTheme,themeIcon,applyTheme,renderPostTitle,buildPostPayload,closeDetails,requestJSON};
 if(typeof module==='object'&&module.exports)module.exports=api;
 else Object.assign(root,api);
 })(typeof globalThis==='object'?globalThis:this);

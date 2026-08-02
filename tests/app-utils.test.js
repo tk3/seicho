@@ -1,6 +1,6 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
-const {escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,selectTheme,selectContentsCollapsed,nextTheme,themeIcon,applyTheme,buildPostPayload,closeDetails,requestJSON}=require('../web/app-utils.js');
+const {escapeHTML,selectLocale,filterAndSortPosts,selectSortOrder,selectTheme,selectContentsCollapsed,nextTheme,themeIcon,applyTheme,renderPostTitle,buildPostPayload,closeDetails,requestJSON}=require('../web/app-utils.js');
 
 test('escapes HTML-sensitive characters',()=>{
  assert.equal(escapeHTML(`<a title="x">Tom & Jerry's</a>`),'&lt;a title=&quot;x&quot;&gt;Tom &amp; Jerry&#39;s&lt;/a&gt;');
@@ -81,6 +81,12 @@ test('applies the selected appearance to the document root',()=>{
  applyTheme(root,'dark');
  assert.equal(root.dataset.theme,'dark');
  assert.equal(root.style.colorScheme,'dark');
+});
+
+test('renders a draft badge outside the truncatable post title',()=>{
+ const html=renderPostTitle('A very long & important title',true);
+ assert.equal(html,'<span class="post-title">A very long &amp; important title</span><span class="draft">DRAFT</span>');
+ assert.equal(renderPostTitle('Published',false),'<span class="post-title">Published</span>');
 });
 
 test('builds a save payload without changing Markdown whitespace',()=>{

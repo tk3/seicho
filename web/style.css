@@ -8,9 +8,10 @@ kbd{margin-left:8px;opacity:.6}
 aside{overflow:auto}
 .aside-title button{background:transparent;font-size:22px}
 .post{cursor:pointer}
-.post strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.post strong{display:flex;align-items:center}
+.post-title{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .post small{color:var(--muted)}
-.draft{margin-left:5px;padding:2px 5px;background:#e8ded5;border-radius:3px;color:#855439;font-size:9px}
+.post .draft{flex:none;margin-left:5px;padding:2px 5px;background:#e8ded5;border-radius:3px;color:#855439;font-size:9px}
 .empty{display:grid;place-items:center;text-align:center}
 .empty p{max-width:400px}
 .meta{display:grid;border-bottom:1px solid var(--line)}
